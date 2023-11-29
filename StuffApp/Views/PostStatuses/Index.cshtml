@@ -1,0 +1,53 @@
+﻿@model IEnumerable<StuffApp.Models.Data.PostStatus>
+
+@{
+    ViewData["Title"] = "Статусы поста";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="breadcrumb-item active">Статусы поста</li>
+    </ol>
+</nav>
+
+<h1>Статусы поста</h1>
+
+<h6>
+    <a class="btn text-dark" asp-action="Create">
+        <i class="far fa-plus-square"></i> Добавить статус поста
+    </a>
+</h6>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StatusName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StatusName)
+            </td>
+            <td>
+                @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
+                <a class="btn text-dark" title="Посмотреть подробнее" asp-action="Details" asp-route-id="@item.Id">
+                    <i class="far fa-eye"></i>
+                </a>
+                <a class="btn text-dark" title="Редактировать" asp-action="Edit" asp-route-id="@item.Id">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+                <a class="btn text-dark" title="Удалить" asp-action="Delete" asp-route-id="@item.Id">
+                    <i class="far fa-minus-square"></i>
+                </a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,44 @@
+﻿@model StuffApp.Models.Data.PostStatus
+
+@{
+    ViewData["Title"] = "Редактирования статуса поста";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="breadcrumb-item"><a asp-controller="PostStatuses" asp-action="Index">Статусы поста</a></li>
+        <li class="breadcrumb-item active"><a>Редактирования статуса поста</a></li>
+    </ol>
+</nav>
+
+<h3>
+    <a class="btn text-dark" asp-action="Index" title="Вернуться к списку">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    Редактирование статуса поста
+</h3>
+
+@* <h4>Статус поста</h4> *@
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group mb-3">
+                <label asp-for="StatusName" class="control-label"></label>
+                <input asp-for="StatusName" class="form-control" />
+                <span asp-validation-for="StatusName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Сохранить" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

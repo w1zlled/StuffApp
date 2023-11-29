@@ -1,0 +1,42 @@
+﻿@model StuffApp.Models.Data.Category
+
+@{
+    ViewData["Title"] = "Подробности категории";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Categories" asp-action="Index">Категории</a></li>
+        <li class="breadcrumb-item active"><a>Подробности категории</a></li>
+    </ol>
+</nav>
+
+<h3>
+    <a class="btn text-dark" asp-action="Index" title="Вернуться к списку">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    Подробности категории
+</h3>
+
+<div>
+    @* <h4>Категория</h4> *@
+    <hr />
+    <dl class="row mb-3">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CategoryName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CategoryName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ParentCategoryId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ParentCategoryId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a class="text-dark text-decoration-none" asp-action="Edit" asp-route-id="@Model?.Id" title="Изменить"><i class="fas fa-pencil-alt"></i> Изменить</a>
+</div>

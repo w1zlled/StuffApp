@@ -1,0 +1,39 @@
+﻿@model StuffApp.Models.Data.PostStatus
+
+@{
+    ViewData["Title"] = "Удаление статуса поста";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="breadcrumb-item"><a asp-controller="PostStatuses" asp-action="Index">Статусы поста</a></li>
+        <li class="breadcrumb-item active"><a>Удаление статуса поста</a></li>
+    </ol>
+</nav>
+
+<h3>
+    <a class="btn text-dark" asp-action="Index" title="Вернуться к списку">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    Удаление статуса поста
+</h3>
+
+<h3>Вы уверены что вы хотите удалить статус поста?</h3>
+<div>
+    @* <h4>Статус поста</h4> *@
+    <hr />
+    <dl class="row mb-3">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.StatusName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.StatusName)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Удалить" class="btn btn-danger" />
+    </form>
+</div>
