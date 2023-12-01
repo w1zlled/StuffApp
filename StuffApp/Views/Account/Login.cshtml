@@ -1,0 +1,38 @@
+﻿@model StuffApp.ViewModels.Account.LoginViewModel
+
+@{
+    ViewData["Title"] = "Вход";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header text-center"><h3>@ViewData["Title"]</h3></div>
+            <div class="card-body">
+                <form method="post" asp-controller="Account" asp-action="Login"
+                      asp-route-returnUrl="@Model.ReturnUrl">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    @* @{
+                        if (String.IsNullOrEmpty(ViewData["loginErr"]))
+                    } *@
+                    <div class="mb-3">
+                        <input asp-for="Email" placeholder="E-mail" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <input asp-for="Password" placeholder="Пароль" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <input type="submit" value="Войти" class="btn btn-primary btn-block mt-3" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="control-label">
+                            <a asp-controller="Account" asp-action="Register">Зарегистрироваться</a>
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

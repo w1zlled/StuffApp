@@ -6,3 +6,22 @@
     <h1 class="display-4">Добро пожаловать!</h1>
     <h2><i class="fa-solid fa-oil-well"> </i>С днём масла!</h2>
 </div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="smooth row flex-column align-items-center">
+        <p>Здравствуйте, @User.Identity.Name!</p>
+
+        <form class="" method="post" asp-controller="Account" asp-action="Logout">
+            <input type="submit" value="Выход" />
+        </form>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-center gap-3">
+        <a class="btn btn-secondary" asp-controller="Account" asp-action="Login">Вход</a>
+        <a class="btn btn-secondary" asp-controller="Account" asp-action="Register">Регистрация</a>
+    </div>
+    
+}

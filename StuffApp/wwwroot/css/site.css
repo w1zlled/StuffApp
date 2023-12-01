@@ -20,3 +20,33 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.smooth {
+    animation-duration: 2.5s, 1s;
+    animation-name: smooth, motion;
+    animation-delay: 0.1s;
+    font-size: 24px;
+}
+.smooth * {
+    width: auto;
+}
+
+
+@keyframes smooth {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+@keyframes motion {
+    from {
+        translate: -50% 0;
+    }
+
+    to {
+        translate: 0 0;
+    }
+}
