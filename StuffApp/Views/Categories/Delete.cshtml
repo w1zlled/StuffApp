@@ -1,4 +1,4 @@
-﻿@model StuffApp.Models.Data.Category
+﻿@model StuffApp.Models.Data.CategoryWithParent
 
 @{
     ViewData["Title"] = "Удаление категории";
@@ -25,21 +25,21 @@
     <hr />
     <dl class="row mb-3">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CategoryName)
+            @Html.DisplayNameFor(model => model.Category.CategoryName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CategoryName)
+            @Html.DisplayFor(model => model.Category.CategoryName)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ParentCategoryId)
+            @Html.DisplayNameFor(model => model.Category.ParentCategoryId)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ParentCategoryId)
+            @Html.DisplayFor(model => model.ParentCategoryName)
         </dd>
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Category.Id" />
         <input type="submit" value="Удалить" class="btn btn-danger" />
     </form>
 </div>

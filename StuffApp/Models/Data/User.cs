@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using StuffApp.Models.Data;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 
@@ -13,7 +14,8 @@ namespace StuffApp.Models
         [Display(Name = "Имя")]
         public string FirstName { get; set; }
         public DateTime RegDate { get; set; }
-
+        public string Fullname => string.Format("{0} {1}", LastName, FirstName);
         //навигационные свойства
+        public ICollection<Post> Posts { get; set; }
     }
 }

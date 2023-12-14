@@ -21,6 +21,9 @@
 <table class="table">
     <thead>
         <tr>
+            @* <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th> *@
             <th>
                 @Html.DisplayNameFor(model => model.StatusName)
             </th>
@@ -28,26 +31,30 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StatusName)
-            </td>
-            <td>
-                @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+        @foreach (var item in Model)
+        {
+            <tr>
+                @* <th>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </th> *@
+                <td>
+                    @Html.DisplayFor(modelItem => item.StatusName)
+                </td>
+                <td>
+                    @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
-                <a class="btn text-dark" title="Посмотреть подробнее" asp-action="Details" asp-route-id="@item.Id">
-                    <i class="far fa-eye"></i>
-                </a>
-                <a class="btn text-dark" title="Редактировать" asp-action="Edit" asp-route-id="@item.Id">
-                    <i class="fas fa-pencil-alt"></i>
-                </a>
-                <a class="btn text-dark" title="Удалить" asp-action="Delete" asp-route-id="@item.Id">
-                    <i class="far fa-minus-square"></i>
-                </a>
-            </td>
-        </tr>
-}
+                    <a class="btn text-dark" title="Посмотреть подробнее" asp-action="Details" asp-route-id="@item.Id">
+                        <i class="far fa-eye"></i>
+                    </a>
+                    <a class="btn text-dark" title="Редактировать" asp-action="Edit" asp-route-id="@item.Id">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a class="btn text-dark" title="Удалить" asp-action="Delete" asp-route-id="@item.Id">
+                        <i class="far fa-minus-square"></i>
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

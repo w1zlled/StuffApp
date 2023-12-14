@@ -18,7 +18,7 @@ namespace StuffApp.Controllers
         public async Task<IActionResult> Index()
         {
             return _context.PostStatus != null ? 
-                          View(await _context.PostStatus.OrderBy(f => f.StatusName).ToListAsync()) :
+                          View(await _context.PostStatus.OrderBy(f => f.Id).ToListAsync()) :
                           Problem("Entity set 'AppCtx.PostStatus'  is null.");
         }
 

@@ -12,9 +12,6 @@
                 <form method="post" asp-controller="Account" asp-action="Login"
                       asp-route-returnUrl="@Model.ReturnUrl">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    @* @{
-                        if (String.IsNullOrEmpty(ViewData["loginErr"]))
-                    } *@
                     <div class="mb-3">
                         <input asp-for="Email" placeholder="E-mail" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>

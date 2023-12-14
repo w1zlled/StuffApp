@@ -12,7 +12,15 @@ namespace StuffApp.Models.Data
         [Display(Name = "Категория")]
         public string CategoryName { get; set; }
         [Display(Name = "Родительская категория")]
-        public short ParentCategoryId { get; set; }
+        public short? ParentCategoryId { get; set; }
+
+        /*[Display(Name = "Пост")]
+        public int Post { get; set; }*/
+        // Навигационные свойства
+        [Required]
+        [NotMapped]
+        [ForeignKey("IdFormOfStudy")]
+        public ICollection<Post> Posts { get; set; }
 
     }
 }

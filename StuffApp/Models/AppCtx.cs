@@ -12,7 +12,7 @@ namespace StuffApp.Models
         }
         public DbSet<Category> Categories { get; set; }
         public DbSet<PostStatus> PostStatus { get; set; }
-        /*public DbSet<StuffApp.Models.Data.PostStatus> PostStatus { get; set; } = default!;*/
-
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<PostStatusLog> PostStatusLog { get; set; }
     }
 }

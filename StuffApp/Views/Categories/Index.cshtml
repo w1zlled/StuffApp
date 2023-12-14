@@ -1,4 +1,5 @@
-﻿@model IEnumerable<StuffApp.Models.Data.Category>
+﻿@model IEnumerable<StuffApp.Models.Data.CategoryWithParent>
+@* @model IEnumerable<StuffApp.Models.Data.Category> *@
 
 @{
     ViewData["Title"] = "Категории";
@@ -22,38 +23,39 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.CategoryName)
+                @Html.DisplayNameFor(model => model.Category.CategoryName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ParentCategoryId)
+                @Html.DisplayNameFor(model => model.Category.ParentCategoryId)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ParentCategoryId)
-            </td>
-            <td>
-                @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ParentCategoryName)
+                </td>
+                <td>
+                    @* <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> *@
-                <a class="btn text-dark" title="Посмотреть подробнее" asp-action="Details" asp-route-id="@item.Id">
-                    <i class="far fa-eye"></i>
-                </a>
-                <a class="btn text-dark" title="Редактировать" asp-action="Edit" asp-route-id="@item.Id">
-                    <i class="fas fa-pencil-alt"></i>
-                </a>
-                <a class="btn text-dark" title="Удалить" asp-action="Delete" asp-route-id="@item.Id">
-                    <i class="far fa-minus-square"></i>
-                </a>
-            </td>
-        </tr>
-}
+                    <a class="btn text-dark" title="Посмотреть подробнее" asp-action="Details" asp-route-id="@item.Category.Id">
+                        <i class="far fa-eye"></i>
+                    </a>
+                    <a class="btn text-dark" title="Редактировать" asp-action="Edit" asp-route-id="@item.Category.Id">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a class="btn text-dark" title="Удалить" asp-action="Delete" asp-route-id="@item.Category.Id">
+                        <i class="far fa-minus-square"></i>
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
