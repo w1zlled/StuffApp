@@ -53,7 +53,9 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<AppCtx>();
-        DbInitializer.Initialize(context);
+        var userManager = services.GetRequiredService<UserManager<User>>();
+        var rolesManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        await DbInitializer.Initialize(context, userManager, rolesManager);
         /*PostStatusLog PostStatusLog = new PostStatusLog { IdPost = 1, IdStatus = 3, EditDate = DateTime.Now };
         context.Add(PostStatusLog);
         await context.SaveChangesAsync();*/

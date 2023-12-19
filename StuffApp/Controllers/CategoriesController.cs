@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using StuffApp.ViewModels.Categories;
 
 namespace StuffApp.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class CategoriesController : Controller
     {
         private readonly AppCtx _context;

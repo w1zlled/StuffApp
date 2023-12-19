@@ -35,6 +35,13 @@ namespace StuffApp.ViewModels.Posts
         [Display(Name = "Автор")]
         public string IdUser { get; set; }
 
+        /*[Display(Name = "Изображение")]
+        public string ImagePath { get; set; }*/
+        [Required(ErrorMessage = "Поле 'Изображение' обязательно для заполнения.")]
+        [NotMapped]
+        [Display(Name = "Загрузить изображение")]
+        public IFormFile ImageFile { get; set; }
+
         // Навигационные свойства
         /*[Display(Name = "Категория товара")]
         [ForeignKey("IdCategory")]

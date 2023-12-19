@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StuffApp.Models;
 using StuffApp.Models.Data;
 
 namespace StuffApp.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class PostStatusesController : Controller
     {
         private readonly AppCtx _context;

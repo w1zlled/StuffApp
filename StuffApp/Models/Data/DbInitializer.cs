@@ -1,10 +1,11 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Diagnostics;
 
 namespace StuffApp.Models.Data
 {
     public static class DbInitializer
     {
-        public static void Initialize(AppCtx context)
+        public static async Task Initialize(AppCtx context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             //context.Database.EnsureCreated();
 
@@ -33,6 +34,36 @@ namespace StuffApp.Models.Data
             context.Categories.Add(mainCategory);
             context.SaveChanges();
 
+
+            string adminEmail = "admin@mail.ru";
+            string password = "123Vv.";
+
+            if (await roleManager.FindByNameAsync("admin") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("admin"));
+            }
+            if (await roleManager.FindByNameAsync("registeredUser") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("registeredUser"));
+            }
+
+            if (await userManager.FindByNameAsync(adminEmail) == null)
+            {
+                User admin = new User
+                {
+                    Email = adminEmail,
+                    UserName = adminEmail,
+                    LastName = "Филин",
+                    FirstName = "Виталий",
+                    EmailConfirmed = true
+                };
+
+                IdentityResult result = await userManager.CreateAsync(admin, password);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, "admin");
+                }
+            }
         }
     }
 }

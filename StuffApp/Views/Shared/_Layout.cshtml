@@ -12,8 +12,8 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 container-fluid justify-content-between">
+            <div class="d-flex align-items-center">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">StuffApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -24,19 +24,49 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Категории</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="PostStatuses" asp-action="Index">Статусы поста</a>
-                        </li>
+                        @if (User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(s => s.Value).Contains("admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Категории</a>
+                            </li
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="PostStatuses" asp-action="Index">Статусы поста</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Посты</a>
                         </li>
+                        @if (User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(s => s.Value).Contains("admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Управление пользователями</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="d-flex gap-3 align-items-center">
+                    <span>@User.Identity.Name</span>
+
+                    <form class="" method="post" asp-controller="Account" asp-action="Logout">
+                        @* <input type="submit" value="Выход" /> *@
+                        <button type="submit" class="btn btn-secondary">Выход</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex justify-content-end gap-3">
+                    <a class="btn btn-secondary" asp-controller="Account" asp-action="Login">Вход</a>
+                    <a class="btn btn-secondary" asp-controller="Account" asp-action="Register">Регистрация</a>
+                </div>
+    
+            }
+            @* <div class="ml-auto d-flex gap-2">Логин, Выход</div> *@
         </nav>
+        
     </header>
     <div class="container">
         <main role="main" class="pb-3">

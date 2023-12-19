@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +13,13 @@ namespace StuffApp.Controllers
     {
         private readonly AppCtx _context;
         private readonly UserManager<User> _userManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public PostsController(AppCtx context, UserManager<User> user)
+        public PostsController(AppCtx context, UserManager<User> user, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _userManager = user;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Posts
@@ -29,6 +32,17 @@ namespace StuffApp.Controllers
             ViewData["PageNumber"] = pageNumber != null ? pageNumber : 1;
             ViewData["CategoryId"] = categoryId;
             ViewBag.Categories = _context.Categories.ToList();
+            /*var orderList = new List<string> { "По названию", "По цене" };
+            ViewBag.OrderBy = new SelectList(orderList);*/
+            ViewData["sortOrder"] = sortOrder;
+            List<SelectListItem> orderByList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "name", Text = "По названию" },
+                new SelectListItem { Value = "nameDesc", Text = "По названию (по убыванию)" },
+                new SelectListItem { Value = "price", Text = "По цене" },
+                new SelectListItem { Value = "priceDesc", Text = "По цене (по убыванию)" }
+            };
+            ViewBag.OrderBy = new SelectList(orderByList, "Value", "Text");
 
             if (searchString != null)
             {
@@ -67,17 +81,17 @@ namespace StuffApp.Controllers
             }
             switch (sortOrder)
             {
-                case "name_desc":
+                case "nameDesc":
                     //students = students.OrderByDescending(s => s.LastName);
                     appCtx = appCtx.OrderByDescending(s => s.Post.Title);
                     break;
-                case "Date":
+                case "price":
                     //students = students.OrderBy(s => s.EnrollmentDate);
-                    appCtx = appCtx.OrderBy(s => s.EditDate);
+                    appCtx = appCtx.OrderBy(s => s.Post.Price);
                     break;
-                case "date_desc":
+                case "priceDesc":
                     //students = students.OrderByDescending(s => s.EnrollmentDate);
-                    appCtx = appCtx.OrderByDescending(s => s.EditDate);
+                    appCtx = appCtx.OrderByDescending(s => s.Post.Price);
                     break;
                 default:
                     //students = students.OrderBy(s => s.LastName);
@@ -114,10 +128,14 @@ namespace StuffApp.Controllers
         }
 
         // GET: Posts/Create
-        public IActionResult Create()
+        public async Task<IActionResult> CreateAsync()
         {
             ViewData["IdCategory"] = new SelectList(_context.Categories, "Id", "CategoryName");
-            ViewData["IdUser"] = new SelectList(_context.Users, "Id", "Fullname");
+            string userEmail = User.Identity.Name;
+            // Получаем объект пользователя по email
+            var user = await _userManager.FindByEmailAsync(userEmail);
+            var userId = user.Id;
+            ViewData["IdUser"] = new SelectList(_context.Users, "Id", "Fullname", userId);
             return View();
         }
 
@@ -138,28 +156,40 @@ namespace StuffApp.Controllers
             }*/
             if (ModelState.IsValid)
             {
+                if (model.ImageFile != null)
+                {
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ImageFile.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    model.ImgUrl = "/images/" + uniqueFileName;
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ImageFile.CopyToAsync(fileStream);
+                    }
+                }
                 Post post = new()
-            {
-                Title = model.Title,
-                Descr = model.Descr,
-                Address = model.Address,
-                ImgUrl = model.ImgUrl,
-                /*Price = model.Price,*/
-                Price = (model.Price != null ? model.Price : 0),
-                IdCategory = model.IdCategory,
-                IdUser = model.IdUser
-                /*CategoryName = model.CategoryName,
-                ParentCategoryId = (short)((model.ParentCategoryId != null) ? model.ParentCategoryId : 0)*/
-            };
-            _context.Add(post);
+                {
+                    Title = model.Title,
+                    Descr = model.Descr,
+                    Address = model.Address,
+                    ImgUrl = model.ImgUrl,
+                    /*Price = model.Price,*/
+                    Price = (model.Price != null ? model.Price : 0),
+                    IdCategory = model.IdCategory,
+                    IdUser = model.IdUser
+                    /*CategoryName = model.CategoryName,
+                    ParentCategoryId = (short)((model.ParentCategoryId != null) ? model.ParentCategoryId : 0)*/
+                };
+                _context.Add(post);
 
 
-            await _context.SaveChangesAsync();
-            int postId = post.Id;
-            var log = new PostStatusLog { IdPost = postId, IdStatus = 2, EditDate = DateTime.Now };
-            _context.Add(log);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
+                int postId = post.Id;
+                var log = new PostStatusLog { IdPost = postId, IdStatus = 2, EditDate = DateTime.Now };
+                _context.Add(log);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             else
             {

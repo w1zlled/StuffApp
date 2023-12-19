@@ -1,4 +1,5 @@
 ﻿@using StuffApp.Models.Data
+@using System.Linq;
 @model PaginatedList<StuffApp.Models.Data.PostWithStatus>
 @{
     ViewData["Title"] = "Объявления";
@@ -14,37 +15,65 @@
 
 <h1>Посты</h1>
 
-<h6>
-    <a class="btn text-dark" asp-action="Create">
-        <i class="far fa-plus-square"></i> Создать пост
-    </a>
-</h6>
+@if (User.Identity.IsAuthenticated)
+{
+    <h6>
+        <a class="btn text-dark" asp-action="Create">
+            <i class="far fa-plus-square"></i> Создать пост
+        </a>
+    </h6>
+}
 <form asp-action="Index" method="get" class="mb-3">
-    <div class="d-flex gap-3 align-items-center form-actions no-color">
-        Поиск по заголовку: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
-        <input type="submit" value="Поиск" class="btn btn-primary" />
-        <a asp-action="Index"><i class="text-dark icon-search-posts fa-solid fa-xmark"></i></a>
+    <div class="d-flex gap-3 align-items-center form-actions no-color mb-3">
+        <label for="SearchString">Поиск по заголовку:</label>
+        <input type="text" id="SearchString" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Название объявления" class="form-control mw-300" />
+        @* <input type="submit" value="Поиск" class="btn btn-primary" /> *@
     </div>
-</form>
-<form asp-controller="Posts" asp-action="Index" method="get" class="mb-3">
-    <label for="categoryId">Фильтрация по категориям:</label>
-    <select name="categoryId" id="categoryId">
-        <option value="">Все категории</option>
-        @* @foreach (var category in ViewBag.Categories as List<Category>)
-        {
-        // <option value="@category.Id" @(Model.CurrentFilter == category.Id.ToString() ? "selected" : "")>@category.CategoryName</option>
-        // <option value="@category.Id" selected="@((Model.CurrentFilter == category.Id.ToString()) ? "selected" : null)">@category.CategoryName</option>
-        // <option value="@category.Id" @(ViewData["CategoryId"]?.ToString() == category.Id.ToString() ? "selected" : "")>@category.CategoryName</option>
-        } *@
-        @if (ViewBag.Categories != null)
-        {
-            foreach (var category in ViewBag.Categories as List<StuffApp.Models.Data.Category>)
+    @* </form>
+    <form asp-controller="Posts" asp-action="Index" method="get" class="mb-3"> *@
+    <div class="mb-3">
+        <label for="categoryId">Фильтрация по категориям:</label>
+        <select class="form-select mw-300" name="categoryId" id="categoryId" onchange="submitForm(form)">
+            <option value="">Все категории</option>
+            @* @foreach (var category in ViewBag.Categories as List<Category>)
             {
-                <option value="@category.Id" selected="@(ViewData["CategoryId"]?.ToString() == category.Id.ToString() ? "selected" : null)">@category.CategoryName</option>
+            // <option value="@category.Id" @(Model.CurrentFilter == category.Id.ToString() ? "selected" : "")>@category.CategoryName</option>
+            // <option value="@category.Id" selected="@((Model.CurrentFilter == category.Id.ToString()) ? "selected" : null)">@category.CategoryName</option>
+            // <option value="@category.Id" @(ViewData["CategoryId"]?.ToString() == category.Id.ToString() ? "selected" : "")>@category.CategoryName</option>
+            } *@
+            @if (ViewBag.Categories != null)
+            {
+                foreach (var category in ViewBag.Categories as List<StuffApp.Models.Data.Category>)
+                {
+                    <option value="@category.Id" selected="@(ViewData["CategoryId"]?.ToString() == category.Id.ToString() ? "selected" : null)">@category.CategoryName</option>
+                }
             }
-        }
-    </select>
-    <button class="btn btn-primary" type="submit">ОК</button>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="d-bloc" for="sortOrder">Сортировка:</label>
+        <select class="form-select mw-300" name="sortOrder" id="sortOrder" onchange="submitForm(form)">
+            @* <option value="">Стандартная сортировка</option> *@
+            @* @foreach (var category in ViewBag.Categories as List<Category>)
+            {
+            // <option value="@category.Id" @(Model.CurrentFilter == category.Id.ToString() ? "selected" : "")>@category.CategoryName</option>
+            // <option value="@category.Id" selected="@((Model.CurrentFilter == category.Id.ToString()) ? "selected" : null)">@category.CategoryName</option>
+            // <option value="@category.Id" @(ViewData["CategoryId"]?.ToString() == category.Id.ToString() ? "selected" : "")>@category.CategoryName</option>
+            } *@
+            @if (ViewBag.OrderBy != null)
+            {
+                var orderByList = (SelectList)ViewBag.OrderBy;
+                foreach (var item in orderByList)
+                {
+                    <option value="@item.Value" selected="@(ViewData["sortOrder"]?.ToString() == item.Value?.ToString() ? "selected" : null)">@item.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-primary" type="submit">Применить</button>
+        <a title="Очистить фильтрацию" asp-action="Index"><i class="text-dark icon-search-posts fa-solid fa-xmark"></i></a>
+    </div>
 </form>
 
 <div class="posts row mb-3">
@@ -52,8 +81,8 @@
     {
         <div class="col-lg-3">
             <div class="card text-center">
-            <div class="card-header">
-                @Html.DisplayFor(modelItem => item.Post.Category.CategoryName)
+                <div class="card-header">
+                    @Html.DisplayFor(modelItem => item.Post.Category.CategoryName)
                 </div>
                 <div class="card-body p-0">
                     <div class="card-img-wrapper">
@@ -61,8 +90,8 @@
                     </div>
                     @* <h5 class="card-title">@Html.DisplayFor(modelItem => item.Post.Title)</h5> *@
                     @* <p class="card-text">@(item.Post.Price > 0 ? item.Post.Price + " ₽" : "Бесплатно")</p> *@
-                @* <p class="card-text">@Html.DisplayFor(modelItem => item.Post.Descr)</p> *@
-                @* <a href="#" class="btn btn-primary">Перейти к товару</a> *@
+                    @* <p class="card-text">@Html.DisplayFor(modelItem => item.Post.Descr)</p> *@
+                    @* <a href="#" class="btn btn-primary">Перейти к товару</a> *@
                 </div>
 
                 <div class="card-footer">
@@ -119,5 +148,9 @@
 </div>
 
 
-
+<script>
+    function submitForm(form) {
+        form.submit();
+    }
+</script>
 
