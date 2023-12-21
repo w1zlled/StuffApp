@@ -2,7 +2,7 @@
 @using System.Linq;
 @model PaginatedList<StuffApp.Models.Data.PostWithStatus>
 @{
-    ViewData["Title"] = "Объявления";
+    ViewData["Title"] = "Модерация объявлений";
 }
 @* PaginatedList<StuffApp.Models.Data.PostWithStatus> *@
 @* <strong>@ViewData["test"]</strong> *@
@@ -15,14 +15,14 @@
 
 <h1>Посты</h1>
 
-@if (User.Identity.IsAuthenticated)
+@* @if (User.Identity.IsAuthenticated)
 {
     <h6>
         <a class="btn text-dark" asp-action="Create">
             <i class="far fa-plus-square"></i> Создать пост
         </a>
     </h6>
-}
+} *@
 <form asp-action="Index" method="get" class="mb-3">
     <div class="d-flex gap-3 align-items-center form-actions no-color mb-3">
         <label for="SearchString">Поиск по заголовку:</label>
@@ -66,6 +66,19 @@
                 foreach (var item in orderByList)
                 {
                     <option value="@item.Value" selected="@(ViewData["sortOrder"]?.ToString() == item.Value?.ToString() ? "selected" : null)">@item.Text</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="d-bloc" for="statusId">Статус объявления:</label>
+        <select class="form-select mw-300" name="statusId" id="statusId" onchange="submitForm(form)">
+            @if (ViewBag.OrderBy != null)
+            {
+                var status = (SelectList)ViewBag.StatusesList;
+                foreach (var item in status)
+                {
+                    <option value="@item.Value" selected="@(ViewData["StatusId"]?.ToString() == item.Value?.ToString() ? "selected" : null)">@item.Text</option>
                 }
             }
         </select>

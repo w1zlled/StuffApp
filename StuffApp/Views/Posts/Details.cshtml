@@ -1,7 +1,7 @@
-﻿@model StuffApp.Models.Data.Post
+﻿@model StuffApp.Models.Data.PostWithStatus
 
 @{
-    ViewData["Title"] = "Объявление";
+    ViewData["Title"] = "Объявление \"" + Model.Post.Title + "\"";
 }
 
 <nav aria-label="breadcrumb">
@@ -16,56 +16,62 @@
     <a class="btn text-dark" asp-action="Index" title="Вернуться к списку">
         <i class="fas fa-arrow-left"></i>
     </a>
-    Подробности поста
+    @("Объявление \"" + Model.Post.Title + "\"")
 </h3>
 
-<div>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descr)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descr)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImgUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImgUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.CategoryName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a class="text-dark text-decoration-none" asp-action="Edit" asp-route-id="@Model?.Id" title="Изменить"><i class="fas fa-pencil-alt"></i> Изменить</a>
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>@Model.Post.Title</h1>
+            <div class="post-details-img-wrapper" style="background-image: url(@Model.Post.ImgUrl);">
+                <div class="post-details-img-overlay"></div>
+                <img src="@Model.Post.ImgUrl" alt="Изображение товара" class="img-fluid post-details-img">
+            </div>
+            <div class="text-muted text-start post-details-edit-date"><span>@Model.EditDate</span></div>
+            <p class="fz-18">@Model.Post.Descr</p>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        @{
+                            var priceDisplay = Model.Post.Price > 0 ? $"{Model.Post.Price} ₽" : "Бесплатно";
+                        }
+                        Цена: @priceDisplay
+                    </h5>
+                    <hr>
+                    <p class="card-text">Продавец: <a href="">@Model.Post.User.Fullname</a></p>
+                    <p class="card-text">Телефон: +7 (123) 456-7890</p>
+                    <p class="card-text">Адрес: @Model.Post.Address</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @{
+        if (User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(s => s.Value).Contains("admin") ||
+        User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(s => s.Value).Contains("moderator"))
+        {
+            switch (Model.LatestStatus.Id)
+            {
+                // на модерации -> опубликовать
+                case 2:
+                    <form asp-action="EditStatus" method="get" class="mb-3">
+                        <input hidden name="statusId" value="3">
+                        <input hidden name="postId" value="@Model.Post.Id">
+                        <button type="submit" class="btn btn-secondary">Опубликовать</button>
+                    </form>
+                    break;
+                // опубликовано -> отправить на модерацию
+                case 3:
+                    <form asp-action="EditStatus" method="get" class="mb-3">
+                        <input hidden name="statusId" value="2">
+                        <input hidden name="postId" value="@Model.Post.Id">
+                        <button type="submit" class="btn btn-secondary">Отправить на модерацию</button>
+                    </form>
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 </div>

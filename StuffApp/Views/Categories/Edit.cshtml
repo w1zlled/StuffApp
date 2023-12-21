@@ -38,7 +38,7 @@
             </div> *@
             <div class="mb-3">
                 <label asp-for="ParentCategoryId" class="control-label"></label>
-                <select asp-for="ParentCategoryId" class="form-control">
+                <select asp-for="ParentCategoryId" class="form-control form-select">
                     @if (ViewBag.Categories != null)
                     {
                         foreach (var category in ViewBag.Categories as List<StuffApp.Models.Data.Category>)

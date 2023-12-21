@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StuffApp.Models;
 using StuffApp.ViewModels.Users;
+using System.Data;
 
 namespace StuffApp.Controllers
 {
@@ -118,5 +119,27 @@ namespace StuffApp.Controllers
 
             return NotFound();
         }
+
+        /*public async Task<IActionResult> Details(int? id)
+        {
+            // получаем пользователя
+            User user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                // получем список ролей пользователя
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var allRoles = _roleManager.Roles.ToList();
+                ChangeRoleViewModel model = new ChangeRoleViewModel
+                {
+                    UserId = user.Id,
+                    UserEmail = user.Email,
+                    UserRoles = userRoles,
+                    AllRoles = allRoles
+                };
+                return View(model);
+            }
+
+            return NotFound();
+        }*/
     }
 }

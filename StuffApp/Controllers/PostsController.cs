@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using StuffApp.Models;
 using StuffApp.Models.Data;
 using StuffApp.ViewModels.Posts;
+using System.Data;
 
 namespace StuffApp.Controllers
 {
@@ -70,7 +72,8 @@ namespace StuffApp.Controllers
                 EditDate = post.PostStatusLog
                     .OrderByDescending(log => log.EditDate)
                     .FirstOrDefault().EditDate
-            });
+            })
+            .Where(postWithStatus => postWithStatus.LatestStatus.Id == 3); ;
             if (categoryId.HasValue)
             {
                 appCtx = appCtx.Where(post => post.Post.IdCategory == categoryId.Value);
@@ -115,10 +118,26 @@ namespace StuffApp.Controllers
                 return NotFound();
             }
 
-            var post = await _context.Posts
+            /*var post = await _context.Posts
                 .Include(p => p.Category)
                 .Include(p => p.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);*/
+
+            var post = _context.Posts
+            .Include(post => post.Category)
+            .Include(post => post.User)
+            .Where(post => post.Id == id)
+            .Select(post => new PostWithStatus
+            {
+                Post = post,
+                LatestStatus = post.PostStatusLog
+                    .OrderByDescending(log => log.EditDate)
+                    .FirstOrDefault().PostStatus,
+                EditDate = post.PostStatusLog
+                    .OrderByDescending(log => log.EditDate)
+                    .FirstOrDefault().EditDate
+            })
+            .FirstOrDefault();
             if (post == null)
             {
                 return NotFound();
@@ -316,6 +335,131 @@ namespace StuffApp.Controllers
         private bool PostExists(int id)
         {
             return (_context.Posts?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        // GET: Posts
+        public async Task<IActionResult> IndexModerate(string sortOrder, string searchString, string currentFilter, int? pageNumber, int? categoryId, short? statusId)
+        {
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["PageNumber"] = pageNumber != null ? pageNumber : 1;
+            ViewData["CategoryId"] = categoryId;
+            ViewBag.Categories = _context.Categories.ToList();
+            /*var orderList = new List<string> { "По названию", "По цене" };
+            ViewBag.OrderBy = new SelectList(orderList);*/
+            ViewData["sortOrder"] = sortOrder;
+            List<SelectListItem> orderByList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "name", Text = "По названию" },
+                new SelectListItem { Value = "nameDesc", Text = "По названию (по убыванию)" },
+                new SelectListItem { Value = "price", Text = "По цене" },
+                new SelectListItem { Value = "priceDesc", Text = "По цене (по убыванию)" }
+            };
+            ViewBag.OrderBy = new SelectList(orderByList, "Value", "Text");
+            ViewData["StatusId"] = statusId;
+            List<SelectListItem> statusesList = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "3", Text = "Опубликованные" },
+                new SelectListItem { Value = "2", Text = "На модерации" },
+            };
+            ViewBag.StatusesList = new SelectList(orderByList, "Value", "Text");
+
+            if (searchString != null)
+            {
+                pageNumber = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            /*var appCtx = _context.Posts
+               .Include(post => post.Category)
+               .Include(post => post.User)
+               .Include(post => post.PostStatusLog.MaxBy(PostStatusLog => PostStatusLog.EditDate))
+               .ThenInclude(PostStatusLog => PostStatusLog.PostStatus.StatusName);*/
+
+            var appCtx = _context.Posts
+            .Include(post => post.Category)
+            .Include(post => post.User)
+            .Select(post => new PostWithStatus
+            {
+                Post = post,
+                LatestStatus = post.PostStatusLog
+                    .OrderByDescending(log => log.EditDate)
+                    .FirstOrDefault().PostStatus,
+                EditDate = post.PostStatusLog
+                    .OrderByDescending(log => log.EditDate)
+                    .FirstOrDefault().EditDate
+            });
+            if (categoryId.HasValue)
+            {
+                appCtx = appCtx.Where(post => post.Post.IdCategory == categoryId.Value);
+            }
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                appCtx = appCtx.Where(s => s.Post.Title.Contains(searchString));
+            }
+            if (statusId.HasValue)
+            {
+                appCtx = appCtx.Where(s => s.LatestStatus.Id == statusId.Value);
+            } else
+            {
+                appCtx = appCtx.Where(s => s.LatestStatus.Id == 2);
+                ViewData["StatusId"] = 2;
+            }
+            switch (sortOrder)
+            {
+                case "nameDesc":
+                    //students = students.OrderByDescending(s => s.LastName);
+                    appCtx = appCtx.OrderByDescending(s => s.Post.Title);
+                    break;
+                case "price":
+                    //students = students.OrderBy(s => s.EnrollmentDate);
+                    appCtx = appCtx.OrderBy(s => s.Post.Price);
+                    break;
+                case "priceDesc":
+                    //students = students.OrderByDescending(s => s.EnrollmentDate);
+                    appCtx = appCtx.OrderByDescending(s => s.Post.Price);
+                    break;
+                default:
+                    //students = students.OrderBy(s => s.LastName);
+                    appCtx = appCtx.OrderBy(s => s.Post.Title);
+                    break;
+            }
+
+            /*appCtx.OrderBy(f => f.Title);*/
+            /*var appCtx = _context.*/
+            /*return View(await appCtx.ToListAsync());*/
+            int pageSize = 4;
+            return View(await PaginatedList<PostWithStatus>.CreateAsync(appCtx.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+        public async Task<IActionResult> EditStatus(int postId, short statusId)
+        {
+            /*var post = await _context.Posts.FindAsync(id);*/
+            /*if (post == null)
+            {
+                return NotFound();
+            }*/
+            try
+            {
+                PostStatusLog postStatusLog = new PostStatusLog
+                {
+                    IdPost = postId,
+                    IdStatus = statusId,
+                    EditDate = DateTime.Now,
+                };
+                _context.Add(postStatusLog);
+                await _context.SaveChangesAsync();
+                ViewData["oleg"] = "govno";
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NotFound();
+            }
+            /*return View(new PostWithStatus { Post = post });*/
+            return RedirectToAction(nameof(Details), new { id = postId });
         }
     }
 }
