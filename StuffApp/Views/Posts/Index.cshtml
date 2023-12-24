@@ -4,26 +4,31 @@
 @{
     ViewData["Title"] = "Объявления";
 }
+@inject UserManager<User> UserManager
+@{
+    var userId = UserManager.GetUserId(User);
+    var userName = User.Identity.Name;
+}
 @* PaginatedList<StuffApp.Models.Data.PostWithStatus> *@
 @* <strong>@ViewData["test"]</strong> *@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li class="breadcrumb-item active">Посты</li>
+        <li class="breadcrumb-item active">Объявления</li>
     </ol>
 </nav>
 
-<h1>Посты</h1>
+<h1>Объявления</h1>
 
 @if (User.Identity.IsAuthenticated)
 {
     <h6>
         <a class="btn text-dark" asp-action="Create">
-            <i class="far fa-plus-square"></i> Создать пост
+            <i class="far fa-plus-square"></i> Создать объявление
         </a>
     </h6>
 }
-<form asp-action="Index" method="get" class="mb-3">
+<form asp-action="Index" method="get" class="mb-2">
     <div class="d-flex gap-3 align-items-center form-actions no-color mb-3">
         <label for="SearchString">Поиск по заголовку:</label>
         <input type="text" id="SearchString" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Название объявления" class="form-control mw-300" />
@@ -75,16 +80,16 @@
         <a title="Очистить фильтрацию" asp-action="Index"><i class="text-dark icon-search-posts fa-solid fa-xmark"></i></a>
     </div>
 </form>
-
-<div class="posts row mb-3">
+<div class="d-flex gap-2 align-items-center mb-3"><span class="warning-cirlce"></span><span>- ваши объявления</span></div>
+<div class="posts row mb-3 gy-4">
     @foreach (var item in Model)
     {
         <div class="col-lg-3">
-            <div class="card text-center">
+            <div class="card text-center @(userId == item.Post.IdUser ? "post-owner" : "")">
                 <div class="card-header">
                     @Html.DisplayFor(modelItem => item.Post.Category.CategoryName)
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body bg-white p-0">
                     <a asp-action="Details" asp-route-id="@item.Post.Id" class="card-img-wrapper">
                         <img class="card-img-img" src="@Html.DisplayFor(modelItem => item.Post.ImgUrl)">
                     </a>

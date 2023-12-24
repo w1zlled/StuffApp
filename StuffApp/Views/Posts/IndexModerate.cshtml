@@ -9,11 +9,11 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li class="breadcrumb-item active">Посты</li>
+        <li class="breadcrumb-item active">Модерация объявлений</li>
     </ol>
 </nav>
 
-<h1>Посты</h1>
+<h1>Модерация объявлений</h1>
 
 @* @if (User.Identity.IsAuthenticated)
 {
@@ -23,7 +23,7 @@
         </a>
     </h6>
 } *@
-<form asp-action="Index" method="get" class="mb-3">
+<form asp-action="IndexModerate" method="get" class="mb-3">
     <div class="d-flex gap-3 align-items-center form-actions no-color mb-3">
         <label for="SearchString">Поиск по заголовку:</label>
         <input type="text" id="SearchString" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Название объявления" class="form-control mw-300" />
@@ -98,7 +98,7 @@
                     @Html.DisplayFor(modelItem => item.Post.Category.CategoryName)
                 </div>
                 <div class="card-body p-0">
-                    <a asp-action="Details" asp-route-id="@item.Post.Id" class="card-img-wrapper">
+                    <a asp-action="DetailsModerate" asp-route-id="@item.Post.Id" class="card-img-wrapper">
                         <img class="card-img-img" src="@Html.DisplayFor(modelItem => item.Post.ImgUrl)">
                     </a>
                     @* <h5 class="card-title">@Html.DisplayFor(modelItem => item.Post.Title)</h5> *@

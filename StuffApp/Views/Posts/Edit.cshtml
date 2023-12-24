@@ -7,7 +7,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li class="breadcrumb-item"><a asp-controller="Posts" asp-action="Index">Посты</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Posts" asp-action="Index">Объявления</a></li>
         <li class="breadcrumb-item active"><a>Редактирование</a></li>
     </ol>
 </nav>
@@ -16,13 +16,13 @@
     <a class="btn text-dark" asp-action="Index" title="Вернуться к списку">
         <i class="fas fa-arrow-left"></i>
     </a>
-    Изменение поста
+    Редактирование объявления
 </h3>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -41,9 +41,13 @@
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ImgUrl" class="control-label"></label>
-                <input asp-for="ImgUrl" class="form-control" />
-                <span asp-validation-for="ImgUrl" class="text-danger"></span>
+                <label asp-for="ImageFile"></label>
+                @if (!string.IsNullOrEmpty(ViewBag.CurrentImgUrl))
+                {
+                    <img src="@ViewBag.CurrentImgUrl" alt="Current Image" class="mw-300 mb-2" style="width: 100%; border-radius: 5px;" />
+                }
+                <input type="file" asp-for="ImageFile" class="form-control" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Price" class="control-label"></label>
@@ -60,7 +64,7 @@
                 <select asp-for="IdUser" class="form-control form-select" asp-items="ViewBag.IdUser"></select>
                 <span asp-validation-for="IdUser" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-1">
                 <input type="submit" value="Сохранить" class="btn btn-primary" />
             </div>
         </form>

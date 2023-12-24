@@ -2,8 +2,9 @@
 using StuffApp.Models.Data;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 
-namespace StuffApp.Models
+namespace StuffApp.Models.Data
 {
     public class User : IdentityUser
     {
@@ -17,5 +18,10 @@ namespace StuffApp.Models
         public string Fullname => string.Format("{0} {1}", LastName, FirstName);
         //навигационные свойства
         public ICollection<Post> Posts { get; set; }
+
+        public static implicit operator User(ClaimsPrincipal v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

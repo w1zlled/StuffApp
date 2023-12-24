@@ -1,34 +1,22 @@
 ﻿@model StuffApp.Models.Data.PostWithStatus
 
 @{
-    ViewData["Title"] = "Объявление \"" + Model.Post.Title + "\"";
+    ViewData["Title"] = "Модерация объявления \"" + Model.Post.Title + "\"";
 }
-@inject UserManager<User> UserManager
-@{
-    var userId = UserManager.GetUserId(User);
-    var userName = User.Identity.Name;
-    var message = "";
-    var owner = false;
-    if (userId == Model.Post.IdUser)
-    {
-        message = "Можно редактировать это вы";
-        owner = true;
-    }
-}
-<span>@message</span>
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li class="breadcrumb-item"><a asp-controller="Posts" asp-action="Index">Объявления</a></li>
-        <li class="breadcrumb-item active"><a>@("Объявление \"" + Model.Post.Title + "\"")</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Posts" asp-action="IndexModerate">Модерация объявлений</a></li>
+        <li class="breadcrumb-item active"><a>Объявление</a></li>
     </ol>
 </nav>
 
 <h3>
-    <a class="btn text-dark" asp-action="Index" title="Вернуться к списку">
+    <a class="btn text-dark" asp-action="IndexModerate" title="Вернуться к списку">
         <i class="fas fa-arrow-left"></i>
     </a>
-    @("Объявление \"" + Model.Post.Title + "\"")
+    @("модерация объявления \"" + Model.Post.Title + "\"")
 </h3>
 
 <div class="container mt-3">
@@ -84,10 +72,6 @@
                 default:
                     break;
             }
-        }
-        @if (owner)
-        {
-            <a asp-controller="Posts" asp-action="Edit" asp-route-id="@Model.Post.Id" class="btn btn-primary">Редактировать</a>
         }
     }
 </div>

@@ -1,0 +1,91 @@
+﻿@using StuffApp.Models;
+@model StuffApp.ViewModels.Users.DetailsUserViewModel
+@{
+    ViewData["Title"] = "Продавец \"" + Model.User.Fullname + "\"";
+
+}
+@inject UserManager<User> UserManager
+@{
+    var userId = UserManager.GetUserId(User);
+    var userName = User.Identity.Name;
+    var message = "";
+    var owner = false;
+    if (userId == Model.User.Id)
+    {
+        message = "Можно редактировать это вы";
+        owner = true;
+    }
+}
+@* <p>UserId: @userId</p>
+<p>UserName: @userName</p>
+<p>@message</p> *@
+
+@* PaginatedList<StuffApp.Models.Data.PostWithStatus> *@
+@* <strong>@ViewData["test"]</strong> *@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Posts" asp-action="Index">Объявления</a></li>
+        <li class="breadcrumb-item active">@("Продавец \"" + Model.User.Fullname + "\"")</li>
+    </ol>
+</nav>
+
+<h1>@("Продавец \"" + Model.User.Fullname + "\"")</h1>
+
+@* @if (User.Identity.IsAuthenticated)
+{
+    <h6>
+        <a class="btn text-dark" asp-action="Create">
+            <i class="far fa-plus-square"></i> Создать пост
+        </a>
+    </h6>
+} *@
+<div class="row gap-5">
+    <!-- Фиксированная ширина (например, 200px) -->
+    <div class="col-md-3">
+        <div class="text-dark d-flex flex-column gap-2 align-items-start">
+            <img src="/avatar-placeholder.png" width="64px" height="64px" />
+            <span class="fz-22 bold">@Model.User.Fullname</span>
+            <span>468 подписчиков, 5 подписок</span>
+            <span>На StuffApp с октября 2016</span>
+            <a class="btn btn-secondary mt-1">Подписаться</a>
+        </div>
+    </div>
+
+    <!-- Растягивается на все свободное пространство -->
+    <div class="col flex-md-grow-1">
+        <div class="text-dark">
+            <div class="posts row mb-3 gy-3">
+                @foreach (var item in Model.Posts)
+                {
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="card text-center">
+                            <div class="card-header">
+                                @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                            </div>
+                            <div class="card-body p-0">
+                                <a asp-controller="Posts" asp-action="Details" asp-route-id="@item.Id" class="card-img-wrapper">
+                                    <img class="card-img-img" src="@Html.DisplayFor(modelItem => item.ImgUrl)">
+                                </a>
+                                @* <h5 class="card-title">@Html.DisplayFor(modelItem => item.Post.Title)</h5> *@
+                                @* <p class="card-text">@(item.Post.Price > 0 ? item.Post.Price + " ₽" : "Бесплатно")</p> *@
+                                @* <p class="card-text">@Html.DisplayFor(modelItem => item.Post.Descr)</p> *@
+                                @* <a href="#" class="btn btn-primary">Перейти к товару</a> *@
+                            </div>
+
+                            <div class="card-footer">
+                                <h5 class="card-title mb-1">@Html.DisplayFor(modelItem => item.Title)</h5>
+                                <p class="card-text mb-1">@(item.Price > 0 ? item.Price + " ₽" : "Бесплатно")</p>
+                                @* <p class="text-muted mb-0">@Html.DisplayFor(modelItem => item.EditDate)</p> *@
+                                @if (owner)
+                                {
+                                    <a asp-controller="Posts" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Редактировать</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

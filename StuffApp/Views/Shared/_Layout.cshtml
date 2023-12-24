@@ -30,11 +30,11 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Категории</a>
                             </li
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="PostStatuses" asp-action="Index">Статусы поста</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="PostStatuses" asp-action="Index">Статусы объявлений</a>
                             </li>
                         }
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Посты</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Объявления</a>
                         </li>
                         @if (User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(s => s.Value).Contains("admin"))
                         {
@@ -42,7 +42,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Управление пользователями</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="IndexModerate">Модерация постов</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="IndexModerate">Модерация объявлений</a>
                             </li>
                         }
                     </ul>

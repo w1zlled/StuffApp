@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -105,13 +106,48 @@ namespace StuffApp.Controllers
             /*appCtx.OrderBy(f => f.Title);*/
             /*var appCtx = _context.*/
             /*return View(await appCtx.ToListAsync());*/
-            int pageSize = 4;
+            int pageSize = 8;
             return View(await PaginatedList<PostWithStatus>.CreateAsync(appCtx.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
 
         // GET: Posts/Details/5
         public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || _context.Posts == null)
+            {
+                return NotFound();
+            }
+
+            /*var post = await _context.Posts
+                .Include(p => p.Category)
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(m => m.Id == id);*/
+
+            var post = _context.Posts
+            .Include(post => post.Category)
+            .Include(post => post.User)
+            .Where(post => post.Id == id)
+            .Select(post => new PostWithStatus
+            {
+                Post = post,
+                LatestStatus = post.PostStatusLog
+                    .OrderByDescending(log => log.EditDate)
+                    .FirstOrDefault().PostStatus,
+                EditDate = post.PostStatusLog
+                    .OrderByDescending(log => log.EditDate)
+                    .FirstOrDefault().EditDate
+            })
+            .FirstOrDefault();
+            if (post == null)
+            {
+                return NotFound();
+            }
+
+            return View(post);
+        }
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> DetailsModerate(int? id)
         {
             if (id == null || _context.Posts == null)
             {
@@ -245,6 +281,7 @@ namespace StuffApp.Controllers
             };
             ViewData["IdCategory"] = new SelectList(_context.Categories, "Id", "CategoryName", post.IdCategory);
             ViewData["IdUser"] = new SelectList(_context.Users, "Id", "Fullname", post.IdUser);
+            ViewBag.CurrentImgUrl = post.ImgUrl;
             return View(model);
         }
 
@@ -263,6 +300,24 @@ namespace StuffApp.Controllers
 
             if (ModelState.IsValid)
             {
+                if (model.ImageFile != null)
+                {
+                    string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ImageFile.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    model.ImgUrl = "/images/" + uniqueFileName;
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ImageFile.CopyToAsync(fileStream);
+                    }
+                } else
+                {
+                    Post postTemp = _context.Posts
+                        .Where(p => p.Id == id)
+                        .FirstOrDefault();
+                    model.ImgUrl = postTemp.ImgUrl;
+                }
                 try
                 {
                     post.Title = model.Title;
@@ -286,11 +341,13 @@ namespace StuffApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Posts", new { id = id });
+                /*return RedirectToAction(nameof(Index));*/
             }
             ViewData["IdCategory"] = new SelectList(_context.Categories, "Id", "CategoryName", post.IdCategory);
             ViewData["IdUser"] = new SelectList(_context.Users, "Id", "Id", post.IdUser);
             return View(post);
+            
         }
 
         // GET: Posts/Delete/5
@@ -364,7 +421,7 @@ namespace StuffApp.Controllers
                 new SelectListItem { Value = "3", Text = "Опубликованные" },
                 new SelectListItem { Value = "2", Text = "На модерации" },
             };
-            ViewBag.StatusesList = new SelectList(orderByList, "Value", "Text");
+            ViewBag.StatusesList = new SelectList(statusesList, "Value", "Text");
 
             if (searchString != null)
             {

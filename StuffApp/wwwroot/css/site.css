@@ -128,3 +128,22 @@ body {
 .fz-18 {
     font-size: 18px;
 }
+.fz-20 {
+    font-size: 20px;
+}
+.fz-22 {
+    font-size: 22px;
+}
+.bold {
+    font-weight: bold;
+}
+.post-owner {
+    background: #D1F3FF;
+    /*#ADCDBB - cool green*/
+}
+.warning-cirlce {
+    background: #D1F3FF;
+    width: 20px;
+    aspect-ratio: 1 / 1;
+    border: 1px solid #999;
+}

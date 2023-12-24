@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StuffApp.Models;
+using StuffApp.Models.Data;
 using StuffApp.ViewModels.Account;
 
 namespace StuffApp.Controllers

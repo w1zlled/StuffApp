@@ -3,23 +3,27 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StuffApp.Models;
+using StuffApp.Models.Data;
 using StuffApp.ViewModels.Users;
 using System.Data;
 
 namespace StuffApp.Controllers
 {
-    [Authorize(Roles = "admin")]
+    /*[Authorize(Roles = "admin")]*/
     public class UsersController : Controller
     {
+        private readonly AppCtx _context;
         UserManager<User> _userManager;
         RoleManager<IdentityRole> _roleManager;
-        public UsersController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public UsersController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, AppCtx context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _context = context;
         }
         // отображение списка пользователей
         // действия для начальной страницы Index
+        [Authorize(Roles = "admin")]
         public IActionResult Index() => View(_userManager.Users.ToList());
 
         /*public async Task<IActionResult> Delete(int? id)
@@ -38,7 +42,7 @@ namespace StuffApp.Controllers
 
             return View(postStatusLog);
         }*/
-
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string userId)
@@ -72,6 +76,7 @@ namespace StuffApp.Controllers
 
         // так как роли задаются для каждого пользователя системы отдельно,
         // то можно перенести методы работы с ними в контроллер Users, где мы можеи получить доступ ко всем пользователям системы
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> EditRoles(string userId)
         {
             // получаем пользователя
@@ -94,6 +99,7 @@ namespace StuffApp.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> EditRoles(string userId, List<string> roles)
         {
@@ -120,26 +126,49 @@ namespace StuffApp.Controllers
             return NotFound();
         }
 
-        /*public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string? id)
         {
-            // получаем пользователя
-            User user = await _userManager.FindByIdAsync(id);
-            if (user != null)
+            if (id == null)
             {
-                // получем список ролей пользователя
-                var userRoles = await _userManager.GetRolesAsync(user);
-                var allRoles = _roleManager.Roles.ToList();
-                ChangeRoleViewModel model = new ChangeRoleViewModel
+                /*return RedirectToAction("Index");*/
+                return NotFound();
+            }
+            /*string userId = id.ToString();*/
+            // получаем пользователя
+            /*User user = await _userManager.FindByIdAsync(id);*/
+            var userWithPosts = await _context.Users
+            .Where(user => user.Id == id)
+            .Include(user => user.Posts)
+            .ThenInclude(post => post.Category)
+            .FirstOrDefaultAsync();
+
+            if (userWithPosts != null)
+            {
+                // Создание объекта DetailsUserViewModel с данными пользователя и постов
+                var viewModel = new DetailsUserViewModel
+                {
+                    User = userWithPosts,
+                    Posts = userWithPosts.Posts
+                };
+
+                return View(viewModel);
+            }
+
+            /*if (user != null)
+            {
+                *//*User model = new User
                 {
                     UserId = user.Id,
                     UserEmail = user.Email,
                     UserRoles = userRoles,
                     AllRoles = allRoles
-                };
-                return View(model);
-            }
-
+                };*/
+                /*return RedirectToAction("Index");*/
+                /*return View(appCtx);*//*
+            }*/
+            /*return RedirectToAction("Index");*/
+            /*return View(model);*/
             return NotFound();
-        }*/
+        }
     }
 }

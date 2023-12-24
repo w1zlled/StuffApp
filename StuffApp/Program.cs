@@ -12,7 +12,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppCtx>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<AppCtx>();
+    .AddEntityFrameworkStores<AppCtx>()
+    .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
