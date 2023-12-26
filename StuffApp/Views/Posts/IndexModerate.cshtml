@@ -99,7 +99,7 @@
                 </div>
                 <div class="card-body p-0">
                     <a asp-action="DetailsModerate" asp-route-id="@item.Post.Id" class="card-img-wrapper">
-                        <img class="card-img-img" src="@Html.DisplayFor(modelItem => item.Post.ImgUrl)">
+                        <img class="card-img-img" src="@Html.DisplayFor(modelItem => item.FirstImage)">
                     </a>
                     @* <h5 class="card-title">@Html.DisplayFor(modelItem => item.Post.Title)</h5> *@
                     @* <p class="card-text">@(item.Post.Price > 0 ? item.Post.Price + " ₽" : "Бесплатно")</p> *@

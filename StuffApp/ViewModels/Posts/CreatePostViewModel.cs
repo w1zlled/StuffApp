@@ -21,8 +21,8 @@ namespace StuffApp.ViewModels.Posts
         [Display(Name = "Адрес")]
         public string? Address { get; set; }
 
-        [Display(Name = "Изображение")]
-        public string? ImgUrl { get; set; }
+        /*[Display(Name = "Изображение")]
+        public string? ImgUrl { get; set; }*/
 
         [Display(Name = "Цена")]
         public int? Price { get; set; }
@@ -37,10 +37,10 @@ namespace StuffApp.ViewModels.Posts
 
         /*[Display(Name = "Изображение")]
         public string ImagePath { get; set; }*/
-        [Required(ErrorMessage = "Поле 'Изображение' обязательно для заполнения.")]
+        [Required(ErrorMessage = "Поле 'Изображения' обязательно для заполнения.")]
         [NotMapped]
-        [Display(Name = "Загрузить изображение")]
-        public IFormFile ImageFile { get; set; }
+        [Display(Name = "Загрузить изображения")]
+        public List<IFormFile> ImageFile { get; set; }
 
         // Навигационные свойства
         /*[Display(Name = "Категория товара")]

@@ -61,11 +61,11 @@
                     <div class="col-lg-4 col-sm-6">
                         <div class="card text-center">
                             <div class="card-header">
-                                @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                                @Html.DisplayFor(modelItem => item.Post.Category.CategoryName)
                             </div>
                             <div class="card-body p-0">
-                                <a asp-controller="Posts" asp-action="Details" asp-route-id="@item.Id" class="card-img-wrapper">
-                                    <img class="card-img-img" src="@Html.DisplayFor(modelItem => item.ImgUrl)">
+                                <a asp-controller="Posts" asp-action="Details" asp-route-id="@item.Post.Id" class="card-img-wrapper">
+                                    <img class="card-img-img" src="@Html.DisplayFor(modelItem => item.FirstImage)">
                                 </a>
                                 @* <h5 class="card-title">@Html.DisplayFor(modelItem => item.Post.Title)</h5> *@
                                 @* <p class="card-text">@(item.Post.Price > 0 ? item.Post.Price + " ₽" : "Бесплатно")</p> *@
@@ -74,12 +74,12 @@
                             </div>
 
                             <div class="card-footer">
-                                <h5 class="card-title mb-1">@Html.DisplayFor(modelItem => item.Title)</h5>
-                                <p class="card-text mb-1">@(item.Price > 0 ? item.Price + " ₽" : "Бесплатно")</p>
+                                <h5 class="card-title mb-1">@Html.DisplayFor(modelItem => item.Post.Title)</h5>
+                                <p class="card-text mb-1">@(item.Post.Price > 0 ? item.Post.Price + " ₽" : "Бесплатно")</p>
                                 @* <p class="text-muted mb-0">@Html.DisplayFor(modelItem => item.EditDate)</p> *@
                                 @if (owner)
                                 {
-                                    <a asp-controller="Posts" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Редактировать</a>
+                                    <a asp-controller="Posts" asp-action="Edit" asp-route-id="@item.Post.Id" class="btn btn-secondary">Редактировать</a>
                                 }
                             </div>
                         </div>

@@ -136,13 +136,41 @@ namespace StuffApp.Controllers
             /*string userId = id.ToString();*/
             // получаем пользователя
             /*User user = await _userManager.FindByIdAsync(id);*/
-            var userWithPosts = await _context.Users
+
+            /*var userWithPosts = await _context.Users
             .Where(user => user.Id == id)
             .Include(user => user.Posts)
             .ThenInclude(post => post.Category)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync();*/
+
+            var userWithPosts = await _context.Users
+                .Where(user => user.Id == id)
+                .Include(user => user.Posts)
+                    .ThenInclude(post => post.Category)
+                .Include(user => user.Posts)
+                    .ThenInclude(post => post.PostImage)
+                .FirstOrDefaultAsync();
 
             if (userWithPosts != null)
+            {
+                var postsWithImages = userWithPosts.Posts.Select(post => new PostWithStatus
+                {
+                    Post = post,
+                    FirstImage = post.PostImage
+                        .OrderBy(img => img.Id)
+                        .FirstOrDefault()?.ImgUrl
+                });
+
+                var viewModel = new DetailsUserViewModel
+                {
+                    User = userWithPosts,
+                    Posts = postsWithImages.ToList()
+                };
+
+                return View(viewModel);
+            }
+
+            /*if (userWithPosts != null)
             {
                 // Создание объекта DetailsUserViewModel с данными пользователя и постов
                 var viewModel = new DetailsUserViewModel
@@ -152,7 +180,7 @@ namespace StuffApp.Controllers
                 };
 
                 return View(viewModel);
-            }
+            }*/
 
             /*if (user != null)
             {
@@ -163,9 +191,9 @@ namespace StuffApp.Controllers
                     UserRoles = userRoles,
                     AllRoles = allRoles
                 };*/
-                /*return RedirectToAction("Index");*/
-                /*return View(appCtx);*//*
-            }*/
+            /*return RedirectToAction("Index");*/
+            /*return View(appCtx);*//*
+        }*/
             /*return RedirectToAction("Index");*/
             /*return View(model);*/
             return NotFound();

@@ -105,6 +105,7 @@ body {
     width: 650px;
     max-width: 100%;
     height: 400px;
+    /*filter: blur(25px);*/
 }
 .post-details-img-overlay {
     position: absolute;
@@ -112,7 +113,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    backdrop-filter: blur(25px);
+    filter: blur(25px);
     z-index: 1;
 }
 .post-details-img {
@@ -146,4 +147,79 @@ body {
     width: 20px;
     aspect-ratio: 1 / 1;
     border: 1px solid #999;
+}
+.slider-gallery {
+    width: 650px !important;
+}
+.main-slider-gallery {
+    width: 100%;
+    height: 400px;
+    margin-bottom: 20px;
+}
+.main-slider-gallery__wrapper{
+    height: 100%;
+}
+.main-slider-gallery__slide-img{
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+.main-slider-gallery__slide-img img {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    object-fit: contain;
+}
+.swiper-button {
+    background: none;
+    border: none;
+    transition: all 0.3s ease 0s;
+}
+.swiper-button:hover {
+    scale: 1.2;
+}
+.slider-gallery__slider-thumb {
+    width: 100%;
+}
+.thumb-slider-gallery__slide {
+    width: 100px !important;
+    opacity: 0.5;
+    /*border: 1px solid transparent;*/
+    transition: all 0.2s ease 0s;
+    transition-property: transform, opacity !important;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.thumb-slider-gallery__slide.swiper-slide-thumb-active {
+    opacity: 1;
+    /*border-color: #000;*/
+}
+.thumb-slider-gallery__slide-img {
+    border-radius: 4px;
+    width: 100px;
+    height: 100px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease 0s;
+}
+.swiper-slide-thumb-active .thumb-slider-gallery__slide-img{
+    border-color: #000;
+}
+.thumb-slider-gallery__slide-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.swiper-button {
+    background: #fff;
+    border-radius: 50px;
+    width: 50px !important;
+    height: 50px !important;
+}
+.swiper-button::after{
+    font-size: 30px !important;
+}
+.main-slider-gallery__slide {
+    overflow: hidden;
 }

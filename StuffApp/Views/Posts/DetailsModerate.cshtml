@@ -23,10 +23,10 @@
     <div class="row">
         <div class="col-md-8">
             <h1>@Model.Post.Title</h1>
-            <div class="post-details-img-wrapper" style="background-image: url(@Model.Post.ImgUrl);">
+            @* <div class="post-details-img-wrapper" style="background-image: url(@Model.Post.ImgUrl);">
                 <div class="post-details-img-overlay"></div>
                 <img src="@Model.Post.ImgUrl" alt="Изображение товара" class="img-fluid post-details-img">
-            </div>
+            </div> *@
             <div class="text-muted text-start post-details-edit-date"><span>@Model.EditDate</span></div>
             <p class="fz-18">@Model.Post.Descr</p>
         </div>

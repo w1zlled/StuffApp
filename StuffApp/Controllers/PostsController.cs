@@ -72,7 +72,10 @@ namespace StuffApp.Controllers
                     .FirstOrDefault().PostStatus,
                 EditDate = post.PostStatusLog
                     .OrderByDescending(log => log.EditDate)
-                    .FirstOrDefault().EditDate
+                    .FirstOrDefault().EditDate,
+                FirstImage = post.PostImage
+                .OrderBy(img => img.Id)
+                .FirstOrDefault().ImgUrl
             })
             .Where(postWithStatus => postWithStatus.LatestStatus.Id == 3); ;
             if (categoryId.HasValue)
@@ -127,6 +130,7 @@ namespace StuffApp.Controllers
             var post = _context.Posts
             .Include(post => post.Category)
             .Include(post => post.User)
+            .Include(post => post.PostImage)
             .Where(post => post.Id == id)
             .Select(post => new PostWithStatus
             {
@@ -199,19 +203,9 @@ namespace StuffApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreatePostViewModel model)
         {
-            /*if (ModelState.IsValid)
-            {*/
-            /*_context.Add(post);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));*/
-            /*}
-            else
-            {
-                return NotFound(ModelState);
-            }*/
             if (ModelState.IsValid)
             {
-                if (model.ImageFile != null)
+                /*if (model.ImageFile != null)
                 {
                     string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images");
                     string uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ImageFile.FileName;
@@ -222,26 +216,47 @@ namespace StuffApp.Controllers
                     {
                         await model.ImageFile.CopyToAsync(fileStream);
                     }
-                }
+                }*/
                 Post post = new()
                 {
                     Title = model.Title,
                     Descr = model.Descr,
                     Address = model.Address,
-                    ImgUrl = model.ImgUrl,
-                    /*Price = model.Price,*/
-                    Price = (model.Price != null ? model.Price : 0),
+                    /*ImgUrl = model.ImgUrl,*/
+                    Price = (model.Price != null ? model.Price : 0), // Price = model.Price ?? 0
                     IdCategory = model.IdCategory,
-                    IdUser = model.IdUser
-                    /*CategoryName = model.CategoryName,
-                    ParentCategoryId = (short)((model.ParentCategoryId != null) ? model.ParentCategoryId : 0)*/
+                    IdUser = model.IdUser,
+                    PostImage = new List<PostImage>()
                 };
                 _context.Add(post);
-
-
                 await _context.SaveChangesAsync();
-                int postId = post.Id;
-                var log = new PostStatusLog { IdPost = postId, IdStatus = 2, EditDate = DateTime.Now };
+                // Обработка загрузки изображений
+                foreach (var imageFile in model.ImageFile)
+                {
+                    if (imageFile != null)
+                    {
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                        string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "images", uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imageFile.CopyToAsync(fileStream);
+                        }
+
+                        var postImage = new PostImage
+                        {
+                            ImgUrl = "/images/" + uniqueFileName,
+                            IdPost = post.Id
+                        };
+
+                        post.PostImage.Add(postImage);
+                    }
+                }
+
+                /*_context.Add(post);*/
+                await _context.SaveChangesAsync();
+                /*int postId = post.Id;*/
+                var log = new PostStatusLog { IdPost = post.Id, IdStatus = 2, EditDate = DateTime.Now };
                 _context.Add(log);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -274,14 +289,14 @@ namespace StuffApp.Controllers
                 Title = post.Title,
                 Descr = post.Descr,
                 Address = post.Address,
-                ImgUrl = post.ImgUrl,
+                /*ImgUrl = post.ImgUrl,*/
                 Price = post.Price,
                 IdCategory = post.IdCategory,
                 IdUser = post.IdUser
             };
             ViewData["IdCategory"] = new SelectList(_context.Categories, "Id", "CategoryName", post.IdCategory);
             ViewData["IdUser"] = new SelectList(_context.Users, "Id", "Fullname", post.IdUser);
-            ViewBag.CurrentImgUrl = post.ImgUrl;
+            /*ViewBag.CurrentImgUrl = post.ImgUrl;*/
             return View(model);
         }
 
@@ -316,14 +331,14 @@ namespace StuffApp.Controllers
                     Post postTemp = _context.Posts
                         .Where(p => p.Id == id)
                         .FirstOrDefault();
-                    model.ImgUrl = postTemp.ImgUrl;
+                    /*model.ImgUrl = postTemp.ImgUrl;*/
                 }
                 try
                 {
                     post.Title = model.Title;
                     post.Descr = model.Descr;
                     post.Address = model.Address;
-                    post.ImgUrl = model.ImgUrl;
+                    /*post.ImgUrl = model.ImgUrl;*/
                     post.Price = model.Price;
                     post.IdCategory = model.IdCategory;
                     post.IdUser = model.IdUser;
@@ -448,7 +463,10 @@ namespace StuffApp.Controllers
                     .FirstOrDefault().PostStatus,
                 EditDate = post.PostStatusLog
                     .OrderByDescending(log => log.EditDate)
-                    .FirstOrDefault().EditDate
+                    .FirstOrDefault().EditDate,
+                FirstImage = post.PostImage
+                .OrderBy(img => img.Id)
+                .FirstOrDefault().ImgUrl
             });
             if (categoryId.HasValue)
             {
