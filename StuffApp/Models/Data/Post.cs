@@ -20,8 +20,6 @@ namespace StuffApp.Models.Data
         [Display(Name = "Адрес")]
         public string? Address { get; set; }
 
-        /*[Display(Name = "Изображение")]
-        public string ImgUrl { get; set; }*/
 
         [Display(Name = "Цена")]
         public int? Price { get; set; }
@@ -34,11 +32,6 @@ namespace StuffApp.Models.Data
         [Display(Name = "Автор")]
         public string IdUser { get; set; }
 
-        /*[Required(ErrorMessage = "Поле 'Изображение' обязательно для заполнения.")]
-        [NotMapped]
-        [Display(Name = "Загрузить изображение")]
-        public IFormFile ImageFile { get; set; }*/
-
         // Навигационные свойства
         [Display(Name = "Категория товара")]
         [ForeignKey("IdCategory")]
@@ -50,6 +43,6 @@ namespace StuffApp.Models.Data
 
         public ICollection<Category> Categories { get; set; }
         public ICollection<PostStatusLog> PostStatusLog { get; set; }
-        public ICollection<PostImage> PostImage{ get; set; }
+        public ICollection<PostImage>? PostImage{ get; set; }
     }
 }

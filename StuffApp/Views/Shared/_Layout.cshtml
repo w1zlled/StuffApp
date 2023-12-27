@@ -13,19 +13,31 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 container-fluid justify-content-between">
+        <nav class="navbar navbar-expand-lg navbar-toggleable-lg navbar-light bg-white border-bottom box-shadow mb-3 container-fluid justify-content-between">
             <div class="d-flex align-items-center">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">StuffApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная</a>
                         </li>
-                        @if (User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(s => s.Value).Contains("admin"))
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Объявления</a>
+                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="SubscribeIndex">Подписки</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="IndexMy">Мои объявления</a>
+                            </li>
+                        }
+                        @* @if (User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(s => s.Value).Contains("admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Категории</a>
@@ -33,25 +45,33 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="PostStatuses" asp-action="Index">Статусы объявлений</a>
                             </li>
-                        }
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Объявления</a>
-                        </li>
-                        @if (User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(s => s.Value).Contains("admin"))
-                        {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Управление пользователями</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="IndexModerate">Модерация объявлений</a>
                             </li>
-                        }
+                        } *@                        
                     </ul>
                 </div>
             </div>
             @if (User.Identity.IsAuthenticated)
             {
                 <div class="d-flex gap-3 align-items-center">
+                    @if (User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(s => s.Value).Contains("admin"))
+                    {
+                        <div class="dropdown">
+                            <button class="nav-link text-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Админ-панель
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="nav-link text-dark dropdown-item" asp-area="" asp-controller="Categories" asp-action="Index">Категории</a>
+                                <a class="nav-link text-dark dropdown-item" asp-area="" asp-controller="PostStatuses" asp-action="Index">Статусы объявлений</a>
+                                <a class="nav-link text-dark dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Управление пользователями</a>
+                                <a class="nav-link text-dark dropdown-item" asp-area="" asp-controller="Posts" asp-action="IndexModerate">Модерация объявлений</a>
+                            </div>
+                        </div>
+                    }
                     <span>@User.Identity.Name</span>
 
                     <form class="" method="post" asp-controller="Account" asp-action="Logout">

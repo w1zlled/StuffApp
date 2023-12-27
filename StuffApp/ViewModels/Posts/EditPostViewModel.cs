@@ -31,9 +31,11 @@ namespace StuffApp.ViewModels.Posts
         [Display(Name = "Автор")]
         public string IdUser { get; set; }
 
-        /*[Required(ErrorMessage = "Поле 'Изображение' обязательно для заполнения")]*/
+        /*[Required(ErrorMessage = "Поле 'Изображения' обязательно для заполнения.")]*/
         [NotMapped]
-        [Display(Name = "Загрузить изображение")]
-        public IFormFile? ImageFile { get; set; }
+        [Display(Name = "Загрузить изображения")]
+        public List<IFormFile>? ImageFile { get; set; }
+
+        public List<string>? ExistingImages { get; set; }
     }
 }

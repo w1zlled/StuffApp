@@ -3,7 +3,6 @@
 @{
     ViewData["Title"] = "Модерация объявления \"" + Model.Post.Title + "\"";
 }
-
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -24,9 +23,44 @@
         <div class="col-md-8">
             <h1>@Model.Post.Title</h1>
             @* <div class="post-details-img-wrapper" style="background-image: url(@Model.Post.ImgUrl);">
-                <div class="post-details-img-overlay"></div>
-                <img src="@Model.Post.ImgUrl" alt="Изображение товара" class="img-fluid post-details-img">
+            <div class="post-details-img-overlay"></div>
+            <img src="@Model.Post.ImgUrl" alt="Изображение товара" class="img-fluid post-details-img">
             </div> *@
+            <div class="gallery">
+                <div class="gallery__slider slider-gallery">
+                    <div class="slider-gallery__slider-main main-slider-gallery swiper">
+                        <div class="main-slider-gallery__wrapper swiper-wrapper">
+                            @foreach (var item in Model.Post.PostImage)
+                            {
+                                <div class="main-slider-gallery__slide swiper-slide">
+                                    @* <div class="main-slider-gallery__slide swiper-slide post-details-img-wrapper" style="background-image: url(@item.ImgUrl);"> *@
+                                    <div class="post-details-img-overlay" style="background-image: url(@item.ImgUrl);"></div>
+                                    <div class="main-slider-gallery__slide-img post-details-img"><img src="@item.ImgUrl" alt=""></div>
+                                    @* </div> *@
+                                </div>
+                            }
+                        </div>
+                        <button type="button" class="swiper-button swiper-button-prev"></button>
+                        <button type="button" class="swiper-button swiper-button-next"></button>
+                    </div>
+                    <div class="slider-gallery__slider-thumb thumb-slider-gallery swiper">
+                        <div class="thumb-slider-gallery__wrapper swiper-wrapper">
+                            @foreach (var item in Model.Post.PostImage)
+                            {
+                                <div class="thumb-slider-gallery__slide swiper-slide">
+                                    <div class="thumb-slider-gallery__slide-img">
+                                        <img src="@item.ImgUrl" alt="">
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* @foreach (var item in Model.Post.PostImage)
+            {
+            <img src="@item.ImgUrl" />
+            } *@
             <div class="text-muted text-start post-details-edit-date"><span>@Model.EditDate</span></div>
             <p class="fz-18">@Model.Post.Descr</p>
         </div>
@@ -58,7 +92,7 @@
                     <form asp-action="EditStatus" method="get" class="mb-3">
                         <input hidden name="statusId" value="3">
                         <input hidden name="postId" value="@Model.Post.Id">
-                        <button type="submit" class="btn btn-secondary">Опубликовать</button>
+                        <button type="submit" class="btn btn-secondary mt-2">Опубликовать</button>
                     </form>
                     break;
                 // опубликовано -> отправить на модерацию
@@ -66,7 +100,7 @@
                     <form asp-action="EditStatus" method="get" class="mb-3">
                         <input hidden name="statusId" value="2">
                         <input hidden name="postId" value="@Model.Post.Id">
-                        <button type="submit" class="btn btn-secondary">Отправить на модерацию</button>
+                        <button type="submit" class="btn btn-secondary mt-2">Отправить на модерацию</button>
                     </form>
                     break;
                 default:
@@ -75,3 +109,212 @@
         }
     }
 </div>
+
+<script type="module">
+    import Swiper from 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.mjs';
+    let gallerySliderThumb;
+    let gallerySliderMain;
+    // Инициализация слайдеров
+    function initSliders() {
+        // Перечень слайдеров
+        // Проверяем, есть ли слайдер на странице
+        if (document.querySelector(".slider-gallery__slider-thumb")) {
+            // Указываем скласс нужного слайдера
+            // Создаем слайдер
+            gallerySliderThumb = new Swiper(".slider-gallery__slider-thumb", {
+                // Указываем скласс нужного слайдера
+                // Подключаем модули слайдера
+                // для конкретного случая
+                //modules: [Navigation, Thumbs],
+                observer: true,
+                observeParents: true,
+                slidesPerView: "auto",
+                spaceBetween: 20,
+                // autoHeight: true,
+                // height: "100%",
+                freeMode: true,
+                // allowTouchMove: false,
+                speed: 800,
+                watchSlidesProgress: true,
+                // parallax: true,
+                //touchRatio: 0,
+                //simulateTouch: false,
+                //loop: true,
+                //preloadImages: false,
+                //lazy: true,
+
+                // Брейкпоинты
+                breakpoints: {
+                    320: {
+                        // allowTouchMove: true,
+                        // slidesPerView: 1,
+                        // spaceBetween: 0,
+                    },
+                    650: {
+                        // slidesPerView: 2,
+                    },
+                    768: {
+                        // allowTouchMove: true,
+                        // slidesPerView: 2,
+                        // spaceBetween: 20,
+                    },
+                    992: {
+                        // allowTouchMove: false,
+                        // slidesPerView: 3,
+                        // spaceBetween: 20,
+                    },
+                    1268: {
+                        // allowTouchMove: false,
+                        // slidesPerView: 4,
+                        // spaceBetween: 30,
+                    },
+                },
+
+                // События
+                on: {},
+            });
+        }
+
+        if (document.querySelector(".slider-gallery__slider-main")) {
+            // Указываем скласс нужного слайдера
+            // Создаем слайдер
+            gallerySliderMain = new Swiper(".slider-gallery__slider-main", {
+                // Указываем скласс нужного слайдера
+                // Подключаем модули слайдера
+                // для конкретного случая
+                //modules: [Navigation, Thumbs],
+                observer: true,
+                observeParents: true,
+                slidesPerView: 1,
+                spaceBetween: 20,
+                // autoHeight: true,
+                // height: "100%",
+                // allowTouchMove: false,
+                speed: 800,
+                thumbs: {
+                    swiper: gallerySliderThumb,
+                },
+                // parallax: true,
+                //touchRatio: 0,
+                //simulateTouch: false,
+                //loop: true,
+                //preloadImages: false,
+                //lazy: true,
+
+                // Кнопки "влево/вправо"
+                navigation: {
+                    prevEl: ".swiper-button-prev",
+                    nextEl: ".swiper-button-next",
+                },
+
+                // Брейкпоинты
+
+                breakpoints: {
+                    320: {
+                        // allowTouchMove: true,
+                        // slidesPerView: 1,
+                        // spaceBetween: 0,
+                    },
+                    650: {
+                        // slidesPerView: 2,
+                    },
+                    768: {
+                        // allowTouchMove: true,
+                        // slidesPerView: 2,
+                        // spaceBetween: 20,
+                    },
+                    992: {
+                        // allowTouchMove: false,
+                        // slidesPerView: 3,
+                        // spaceBetween: 20,
+                    },
+                    1268: {
+                        // allowTouchMove: false,
+                        // slidesPerView: 4,
+                        // spaceBetween: 30,
+                    },
+                },
+
+                // События
+                on: {},
+            });
+        }
+    }
+    function animBullets(swiper, direction) {
+        const wrapperCurrentLeft = Math.abs(parseInt(swiper.pagination.el.style.left));
+        // console.log(wrapperCurrentLeft);
+
+        // const bulletCurrent = swiper.pagination.el.querySelector(".swiper-pagination-bullet-active");
+        // bulletWidth = bulletCurrent.offsetWidth;
+        // console.log(bulletWidth);
+        if (direction === "left") {
+            swiper.pagination.el.style.left = "-" + (wrapperCurrentLeft - bulletWidth) + "px";
+        } else {
+            swiper.pagination.el.style.left = "-" + (wrapperCurrentLeft + bulletWidth) + "px";
+        }
+        // swiper.pagination.el.style.left = "-" + currentLeft + bulletWidth + "px";
+    }
+
+    let swiperContentBlock;
+    let bulletWidth;
+    function initAnimBullets(swiper) {
+        if (swiper.pagination.bullets.length * bulletWidth >= swiperContentBlock.offsetWidth) {
+            swiper.pagination.el.style.position = "relative";
+        } else {
+            swiper.pagination.el.style.position = "static";
+        }
+
+        window.addEventListener("resize", () => {
+            // console.log(swiper);
+            // console.log(swiperContentBlock.offsetWidth);
+            // if (window.innerWidth < swiper.)
+            // console.log(swiper.pagination.el.offsetWidth);
+            // console.log(swiperContentBlock.offsetWidth);
+            // console.log(swiper.pagination.bullets.length * bulletWidth);
+            if (swiper.pagination.bullets.length * bulletWidth >= swiperContentBlock.offsetWidth) {
+                swiper.pagination.el.style.position = "relative";
+            } else {
+                swiper.pagination.el.style.position = "static";
+            }
+        });
+    }
+
+    // Скролл на базе слайдера (по классу swiper_scroll для оболочки слайдера)
+    function initSlidersScroll() {
+        let sliderScrollItems = document.querySelectorAll(".swiper_scroll");
+        if (sliderScrollItems.length > 0) {
+            for (let index = 0; index < sliderScrollItems.length; index++) {
+                const sliderScrollItem = sliderScrollItems[index];
+                const sliderScrollBar = sliderScrollItem.querySelector(".swiper-scrollbar");
+                const sliderScroll = new Swiper(sliderScrollItem, {
+                    observer: true,
+                    observeParents: true,
+                    direction: "vertical",
+                    slidesPerView: "auto",
+                    freeMode: {
+                        enabled: true,
+                    },
+                    scrollbar: {
+                        el: sliderScrollBar,
+                        draggable: true,
+                        snapOnRelease: false,
+                    },
+                    mousewheel: {
+                        releaseOnEdges: true,
+                    },
+                });
+                sliderScroll.scrollbar.updateSize();
+            }
+        }
+    }
+
+    window.addEventListener("load", function (e) {
+        // Запуск инициализации слайдеров
+        initSliders();
+        // console.log(gallerySliderMain, gallerySliderThumb);
+
+        // Запуск инициализации скролла на базе слайдера (по классу swiper_scroll)
+        //initSlidersScroll();
+    });
+
+</script>

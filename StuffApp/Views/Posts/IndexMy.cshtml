@@ -2,38 +2,40 @@
 @using System.Linq;
 @model PaginatedList<StuffApp.Models.Data.PostWithStatus>
 @{
-    ViewData["Title"] = "Модерация объявлений";
+    ViewData["Title"] = "Объявления";
 }
 @inject UserManager<User> UserManager
 @{
     var userId = UserManager.GetUserId(User);
     var userName = User.Identity.Name;
 }
+@* PaginatedList<StuffApp.Models.Data.PostWithStatus> *@
+@* <strong>@ViewData["test"]</strong> *@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
-        <li class="breadcrumb-item active">Модерация объявлений</li>
+        <li class="breadcrumb-item active">Мои объявления</li>
     </ol>
 </nav>
 
-<h1>Модерация объявлений</h1>
+<h1>Объявления</h1>
 
-@* @if (User.Identity.IsAuthenticated)
+@if (User.Identity.IsAuthenticated)
 {
     <h6>
         <a class="btn text-dark" asp-action="Create">
-            <i class="far fa-plus-square"></i> Создать пост
+            <i class="far fa-plus-square"></i> Создать объявление
         </a>
     </h6>
-} *@
-<form asp-action="IndexModerate" method="get" class="mb-3">
+}
+<form asp-action="IndexMy" method="get" class="mb-2">
     <div class="d-flex gap-3 align-items-center form-actions no-color mb-3">
         <label for="SearchString">Поиск по заголовку:</label>
         <input type="text" id="SearchString" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Название объявления" class="form-control mw-300" />
         @* <input type="submit" value="Поиск" class="btn btn-primary" /> *@
     </div>
     @* </form>
-    <form asp-controller="Posts" asp-action="Index" method="get" class="mb-3"> *@
+    <form asp-controller="Posts" asp-action="IndexMy" method="get" class="mb-3"> *@
     <div class="mb-3">
         <label for="categoryId">Фильтрация по категориям:</label>
         <select class="form-select mw-300" name="categoryId" id="categoryId" onchange="submitForm(form)">
@@ -88,10 +90,9 @@
     </div>
     <div class="d-flex align-items-center gap-3">
         <button class="btn btn-primary" type="submit">Применить</button>
-        <a title="Очистить фильтрацию" asp-action="IndexModerate"><i class="text-dark icon-search-posts fa-solid fa-xmark"></i></a>
+        <a title="Очистить фильтрацию" asp-action="IndexMy"><i class="text-dark icon-search-posts fa-solid fa-xmark"></i></a>
     </div>
 </form>
-
 @if (Model.Any())
 {
     <div class="posts row mb-3 gy-4">
@@ -124,7 +125,7 @@
             var hasPrev = Model.HasPreviousPage ? true : false;
             var hasNext = Model.HasNextPage ? true : false;
         }
-        <a asp-action="IndexModerate"
+        <a asp-action="IndexMy"
            asp-route-sortOrder="@ViewData["CurrentSort"]"
            asp-route-pageNumber="@(Model.PageIndex - 1)"
            asp-route-currentFilter="@ViewData["CurrentFilter"]"
@@ -132,7 +133,7 @@
             <i class="fa-solid fa-arrow-left"></i>
         </a>
         <span class="text-dark">@Model.PageIndex</span>
-        <a asp-action="IndexModerate"
+        <a asp-action="IndexMy"
            asp-route-sortOrder="@ViewData["CurrentSort"]"
            asp-route-pageNumber="@(Model.PageIndex + 1)"
            asp-route-currentFilter="@ViewData["CurrentFilter"]"

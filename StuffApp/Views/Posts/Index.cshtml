@@ -81,76 +81,59 @@
     </div>
 </form>
 <div class="d-flex gap-2 align-items-center mb-3"><span class="warning-cirlce"></span><span>- ваши объявления</span></div>
-<div class="posts row mb-3 gy-4">
-    @foreach (var item in Model)
-    {
-        <div class="col-lg-3">
-            <div class="card text-center @(userId == item.Post.IdUser ? "post-owner" : "")">
-                <div class="card-header">
-                    @Html.DisplayFor(modelItem => item.Post.Category.CategoryName)
-                </div>
-                <div class="card-body bg-white p-0">
-                    <a asp-action="Details" asp-route-id="@item.Post.Id" class="card-img-wrapper">
-                        <img class="card-img-img" src="@Html.DisplayFor(modelItem => item.FirstImage)">
-                    </a>
-                    @* <h5 class="card-title">@Html.DisplayFor(modelItem => item.Post.Title)</h5> *@
-                    @* <p class="card-text">@(item.Post.Price > 0 ? item.Post.Price + " ₽" : "Бесплатно")</p> *@
-                    @* <p class="card-text">@Html.DisplayFor(modelItem => item.Post.Descr)</p> *@
-                    @* <a href="#" class="btn btn-primary">Перейти к товару</a> *@
-                </div>
+@if (Model.Any())
+{
+    <div class="posts row mb-3 gy-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-3">
+                <div class="card text-center @(userId == item.Post.IdUser ? "post-owner" : "")">
+                    <div class="card-header">
+                        @Html.DisplayFor(modelItem => item.Post.Category.CategoryName)
+                    </div>
+                    <div class="card-body bg-white p-0">
+                        <a asp-action="Details" asp-route-id="@item.Post.Id" class="card-img-wrapper">
+                            <img class="card-img-img" src="@Html.DisplayFor(modelItem => item.FirstImage)">
+                        </a>
+                    </div>
 
-                <div class="card-footer">
-                    <h5 class="card-title mb-1">@Html.DisplayFor(modelItem => item.Post.Title)</h5>
-                    <p class="card-text mb-1">@(item.Post.Price > 0 ? item.Post.Price + " ₽" : "Бесплатно")</p>
-                    <p class="text-muted mb-0">@Html.DisplayFor(modelItem => item.EditDate)</p>
+                    <div class="card-footer">
+                        <h5 class="card-title mb-1">@Html.DisplayFor(modelItem => item.Post.Title)</h5>
+                        <p class="card-text mb-1">@(item.Post.Price > 0 ? item.Post.Price + " ₽" : "Бесплатно")</p>
+                        <p class="text-muted mb-0">@Html.DisplayFor(modelItem => item.EditDate)</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+    <div class="pagination d-flex justify-content-center align-items-center gap-2">
+        @{
+            var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+            var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+            var hasPrev = Model.HasPreviousPage ? true : false;
+            var hasNext = Model.HasNextPage ? true : false;
+        }
+        <a asp-action="Index"
+           asp-route-sortOrder="@ViewData["CurrentSort"]"
+           asp-route-pageNumber="@(Model.PageIndex - 1)"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           class="btn btn-default @prevDisabled">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <span class="text-dark">@Model.PageIndex</span>
+        <a asp-action="Index"
+           asp-route-sortOrder="@ViewData["CurrentSort"]"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           asp-route-currentFilter="@ViewData["CurrentFilter"]"
+           class="btn btn-default @nextDisabled">
+            <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+} else
+{
+    <div class="text-center fz-22 mt-5">Объявлений с такой фильтрацией нет. Сбросьте фильтр</div>
+}
 
-
-
-
-<div class="pagination d-flex justify-content-center align-items-center gap-2">
-    @{
-        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-        var hasPrev = Model.HasPreviousPage ? true : false;
-        var hasNext = Model.HasNextPage ? true : false;
-    }
-
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex - 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @prevDisabled">
-        <i class="fa-solid fa-arrow-left"></i>
-    </a>
-    @* <a asp-action="Index"
-    asp-route-sortOrder="@ViewData["CurrentSort"]"
-    asp-route-pageNumber="@(Model.PageIndex - 1)"
-    asp-route-currentFilter="@ViewData["CurrentFilter"]"
-    class="btn btn-default @prevDisabled">
-    Предыдущая
-    </a> *@
-    @* <span>@ViewData["PageNumber"]</span> *@
-    <span class="text-dark">@Model.PageIndex</span>
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex + 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @nextDisabled">
-        <i class="fa-solid fa-arrow-right"></i>
-    </a>
-    @* <a asp-action="Index"
-    asp-route-sortOrder="@ViewData["CurrentSort"]"
-    asp-route-pageNumber="@(Model.PageIndex + 1)"
-    asp-route-currentFilter="@ViewData["CurrentFilter"]"
-    class="btn btn-default @nextDisabled">
-    Следующая
-    </a> *@
-</div>
 
 
 <script>

@@ -15,5 +15,6 @@ namespace StuffApp.Models
         public DbSet<Post> Posts { get; set; }
         public DbSet<PostStatusLog> PostStatusLog { get; set; }
         public DbSet<PostImage> PostImage { get; set; }
+        public DbSet<Subscribe> Subscribe { get; set; }
     }
 }

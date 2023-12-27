@@ -8,20 +8,13 @@
 @{
     var userId = UserManager.GetUserId(User);
     var userName = User.Identity.Name;
-    var message = "";
     var owner = false;
     if (userId == Model.User.Id)
     {
-        message = "Можно редактировать это вы";
         owner = true;
     }
 }
-@* <p>UserId: @userId</p>
-<p>UserName: @userName</p>
-<p>@message</p> *@
 
-@* PaginatedList<StuffApp.Models.Data.PostWithStatus> *@
-@* <strong>@ViewData["test"]</strong> *@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -48,7 +41,16 @@
             <span class="fz-22 bold">@Model.User.Fullname</span>
             <span>468 подписчиков, 5 подписок</span>
             <span>На StuffApp с октября 2016</span>
-            <a class="btn btn-secondary mt-1">Подписаться</a>
+            @if (!owner)
+            {
+                @if (Model.IsCurrentUserSubscribed)
+                {
+                    <a asp-action="Unsubscribe" asp-route-id="@Model.User.Id" class="btn btn-secondary mt-1">Отписаться</a>
+                } else
+                {
+                    <a asp-action="Subscribe" asp-route-id="@Model.User.Id" class="btn btn-secondary mt-1">Подписаться</a>
+                }
+            }
         </div>
     </div>
 

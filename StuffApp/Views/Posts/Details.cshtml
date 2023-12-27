@@ -7,15 +7,12 @@
 @{
     var userId = UserManager.GetUserId(User);
     var userName = User.Identity.Name;
-    var message = "";
     var owner = false;
     if (userId == Model.Post.IdUser)
     {
-        message = "Можно редактировать это вы";
         owner = true;
     }
 }
-<span>@message</span>
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -104,7 +101,7 @@
                     <form asp-action="EditStatus" method="get" class="mb-3">
                         <input hidden name="statusId" value="3">
                         <input hidden name="postId" value="@Model.Post.Id">
-                        <button type="submit" class="btn btn-secondary">Опубликовать</button>
+                        <button type="submit" class="btn btn-secondary mt-2">Опубликовать</button>
                     </form>
                     break;
                 // опубликовано -> отправить на модерацию
@@ -112,7 +109,7 @@
                     <form asp-action="EditStatus" method="get" class="mb-3">
                         <input hidden name="statusId" value="2">
                         <input hidden name="postId" value="@Model.Post.Id">
-                        <button type="submit" class="btn btn-secondary">Отправить на модерацию</button>
+                        <button type="submit" class="btn btn-secondary mt-2">Отправить на модерацию</button>
                     </form>
                     break;
                 default:

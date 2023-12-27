@@ -4,7 +4,6 @@
 @{
     ViewData["Title"] = "Создание объявления";
 }
-
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
@@ -22,7 +21,7 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-xl-6">
         <form asp-action="Create" enctype="multipart/form-data">
             @* <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@
             <div class="form-group">
@@ -47,7 +46,8 @@
             </div> *@
             <div class="form-group">
                 <label asp-for="ImageFile"></label>
-                <input type="file" asp-for="ImageFile" class="form-control" multiple />
+                <input type="file" accept="image/*" asp-for="ImageFile" id="ImageFile" class="form-control" multiple onchange="previewImages(event)" />
+                <div id="imagePreviewContainer" class="mt-2"></div>
                 <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -74,21 +74,21 @@
                     string userId = user.Id;
                     // Ваш код на основе userId
                     // @userId;
-                    <div class="form-group" hidden>
-                        <label asp-for="IdUser" class="control-label"></label>
-                        <select asp-for="IdUser" class="form-control form-select" asp-items="ViewBag.IdUser"></select>
-                        <span asp-validation-for="IdUser" class="text-danger"></span>
-                    </div>
+                        <div class="form-group" hidden>
+                            <label asp-for="IdUser" class="control-label"></label>
+                            <select asp-for="IdUser" class="form-control form-select" asp-items="ViewBag.IdUser"></select>
+                            <span asp-validation-for="IdUser" class="text-danger"></span>
+                        </div>
                     
                 }
                 else
                 {
-                    <label class="control-label">Пользователь не авторизован</label>
-                    <div class="form-group">
-                        <label asp-for="IdUser" class="control-label"></label>
-                        <select asp-for="IdUser" class="form-control form-select" asp-items="ViewBag.IdUser"></select>
-                        <span asp-validation-for="IdUser" class="text-danger"></span>
-                    </div>
+                        <label class="control-label">Пользователь не авторизован</label>
+                        <div class="form-group">
+                            <label asp-for="IdUser" class="control-label"></label>
+                            <select asp-for="IdUser" class="form-control form-select" asp-items="ViewBag.IdUser"></select>
+                            <span asp-validation-for="IdUser" class="text-danger"></span>
+                        </div>
                     // Обработка случая, когда пользователь не найден
                 }
             }
@@ -99,7 +99,52 @@
         </form>
     </div>
 </div>
+<script>
+    function previewImages(event) {
+        var input = event.target;
+        var previewContainer = document.getElementById('imagePreviewContainer');
 
+        previewContainer.innerHTML = ''; // Очищаем контейнер при каждом новом выборе файлов
+
+        if (input.files && input.files.length > 0) {
+            var clearButton = document.createElement("button");
+            clearButton.classList.add("clear-button");
+            clearButton.classList.add("col-12");
+            clearButton.innerHTML = "Удалить все изображения";
+            clearButton.onclick = function () {
+                previewContainer.innerHTML = "";
+                updateInputFiles();
+            }
+            previewContainer.appendChild(clearButton);
+
+            var containerImages = document.createElement('div');
+            containerImages.classList.add("row");
+            containerImages.classList.add("gy-2");
+            previewContainer.appendChild(containerImages)
+            for (var i = 0; i < input.files.length; i++) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = "width: 100%; height: 100%; object-fit: cover;"
+                    var container = document.createElement('div');
+                    container.classList.add("col-12");
+                    container.classList.add("col-sm-6");
+                    container.classList.add("col-md-4");
+                    container.appendChild(img);
+
+                    containerImages.appendChild(container);
+                };
+                reader.readAsDataURL(input.files[i]);
+            } 
+        }
+    }
+
+    function updateInputFiles() {
+        var input = document.getElementById('ImageFile');
+        input.value = ''; // Сбрасываем значение input
+    }
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

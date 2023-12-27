@@ -14,9 +14,6 @@ namespace StuffApp.Models.Data
         [Display(Name = "Родительская категория")]
         public short? ParentCategoryId { get; set; }
 
-        /*[Display(Name = "Пост")]
-        public int Post { get; set; }*/
-        // Навигационные свойства
         [Required]
         [NotMapped]
         [ForeignKey("IdFormOfStudy")]

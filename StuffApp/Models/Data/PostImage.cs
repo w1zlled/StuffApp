@@ -12,10 +12,10 @@ namespace StuffApp.Models.Data
         [Display(Name = "Изображение")]
         public string ImgUrl { get; set; }
 
-        [Required(ErrorMessage = "Поле 'Изображение' обязательно для заполнения.")]
+        /*[Required(ErrorMessage = "Поле 'Изображение' обязательно для заполнения.")]*/
         [NotMapped]
         [Display(Name = "Загрузить изображение")]
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
         [Required]
         [Display(Name = "Пост")]

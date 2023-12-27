@@ -18,10 +18,10 @@ namespace StuffApp.Models.Data
         public string Fullname => string.Format("{0} {1}", LastName, FirstName);
         //навигационные свойства
         public ICollection<Post> Posts { get; set; }
-
+        /*public ICollection<Subscribe> Subscribe { get; set; }*/
         public static implicit operator User(ClaimsPrincipal v)
         {
             throw new NotImplementedException();
         }
     }
-}
+} 

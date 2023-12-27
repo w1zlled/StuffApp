@@ -6,5 +6,6 @@ namespace StuffApp.ViewModels.Users
     {
         public User User { get; set; }
         public ICollection<PostWithStatus> Posts { get; set; }
+        public bool IsCurrentUserSubscribed { get; set; }
     }
 }

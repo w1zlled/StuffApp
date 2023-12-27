@@ -150,6 +150,7 @@ body {
 }
 .slider-gallery {
     width: 650px !important;
+    max-width: 100%;
 }
 .main-slider-gallery {
     width: 100%;
@@ -216,10 +217,32 @@ body {
     border-radius: 50px;
     width: 50px !important;
     height: 50px !important;
+    box-shadow: 0px 0px 20px -5px #666;
 }
 .swiper-button::after{
     font-size: 30px !important;
 }
 .main-slider-gallery__slide {
     overflow: hidden;
+}
+.preview-image-container {
+    position: relative;
+}
+
+.clear-button {
+    display: inline-block;
+    border: none;
+    background: #DD332D;
+    border-radius: 4px;
+    color: #fff;
+    transition: all 0.3s ease 0s;
+    margin-bottom: 15px;
+}
+
+    .clear-button:hover {
+        background-color: indianred;
+    }
+.dropdown-toggle {
+    border: none;
+    background: none;
 }

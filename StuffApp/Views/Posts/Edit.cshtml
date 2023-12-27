@@ -21,7 +21,7 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-xl-6">
         <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -40,13 +40,19 @@
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label asp-for="ImageFile"></label>
                 @if (!string.IsNullOrEmpty(ViewBag.CurrentImgUrl))
                 {
                     <img src="@ViewBag.CurrentImgUrl" alt="Current Image" class="mw-300 mb-2" style="width: 100%; border-radius: 5px;" />
                 }
                 <input type="file" asp-for="ImageFile" class="form-control" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div> *@
+            <div class="form-group">
+                <label asp-for="ImageFile"></label>
+                <input type="file" accept="image/*" asp-for="ImageFile" id="ImageFile" class="form-control" multiple onchange="previewImages(event)" />
+                <div id="imagePreviewContainer" class="mt-2"></div>
                 <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -71,6 +77,179 @@
     </div>
 </div>
 
+<script>
+    let deletedImages = [];
+    document.addEventListener('DOMContentLoaded', function () {
+        // При загрузке страницы отобразим существующие изображения
+        showExistingImages();
+
+        // Прослушиваем событие изменения в input для выбора файлов
+        // document.getElementById('ImageFile').addEventListener('change', handleFileSelect);
+    });
+
+    function showExistingImages() {
+        var previewContainer = document.getElementById('imagePreviewContainer');
+
+        // Очищаем контейнер перед заполнением
+        previewContainer.innerHTML = '';
+
+        // Передаем URL-ы существующих изображений на сервере
+        var existingImages = @Html.Raw(Json.Serialize(Model.ExistingImages));
+
+        if (existingImages.length > 0) {
+            let existingImagesContainer = document.createElement("div");
+            existingImagesContainer.className = "row gy-2 existing-images-container";
+            previewContainer.appendChild(existingImagesContainer);
+            // Создаем элементы для каждого изображения
+            existingImages.forEach(function (imageUrl) {
+                if (!deletedImages.includes(imageUrl)) {
+                    var img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.style.cssText = "width: 100%; height: 100%; max-height: 100px; object-fit: cover;";
+
+                    var container = document.createElement('div');
+                    container.className = "col-12 col-sm-6 col-md-4 d-flex flex-column gap-2";
+                    /*container.classList.add("col-6");
+                    container.classList.add("col-sm-4");*/
+                    container.appendChild(img);
+
+                    // Создаем кнопку удаления
+                    var deleteButton = document.createElement('div');
+                    deleteButton.classList.add('btn');
+                    deleteButton.classList.add('btn-danger');
+                    deleteButton.classList.add('mt-1');
+                    deleteButton.innerHTML = 'Удалить';
+                    deleteButton.addEventListener('click', function () {
+                        // При клике на кнопку вызываем функцию удаления
+                        deleteImage(imageUrl);
+                    });
+
+                    // Добавляем кнопку в контейнер с изображением
+                    container.appendChild(deleteButton);
+
+                    // Добавляем контейнер в общий контейнер для превью
+                    existingImagesContainer.appendChild(container);
+                }
+            });
+        }
+        
+    }
+
+    function handleFileSelect(event) {
+        var input = event.target;
+        var previewContainer = document.getElementById('imagePreviewContainer');
+
+        previewContainer.innerHTML = '';
+
+        if (input.files && input.files.length > 0) {
+            for (var i = 0; i < input.files.length; i++) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = "width: 100%; height: 100%; object-fit: cover;";
+
+                    var container = document.createElement('div');
+                    container.classList.add("col-12");
+                    container.classList.add("col-sm-6");
+                    //container.classList.add("col-md-4");
+                    container.classList.add("mb-2");
+                    container.appendChild(img);
+
+                    previewContainer.appendChild(container);
+                };
+                reader.readAsDataURL(input.files[i]);
+            }
+        }
+    }
+
+    function deleteImage(imageUrl) {
+        // Отправляем запрос на сервер для удаления изображения
+        fetch('/Posts/DeleteImage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ imageUrl: imageUrl })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Если удаление прошло успешно, перезагружаем изображения
+                if (data.success) {
+                    deletedImages.push(imageUrl);
+                    console.log(deletedImages);
+                    showExistingImages();
+                    
+                } else {
+                    // Обработка ошибки, если не удалось удалить изображение
+                    console.error('Failed to delete image.');
+                }
+            })
+            .catch(error => {
+                // Обработка ошибки при выполнении запроса
+                console.error('Error during fetch:', error);
+            });
+    }
+
+    // Загрузка изображений в input
+
+    function previewImages(event) {
+        var input = event.target;
+        var previewContainer = document.getElementById('imagePreviewContainer');
+        let containerImagesUpload = document.querySelector(".container-images");
+        if (containerImagesUpload) {
+            containerImagesUpload.innerHTML = "";
+        } else {
+            containerImagesUpload = document.createElement("div");
+            containerImagesUpload.classList.add("container-images");
+            containerImagesUpload.classList.add("bg-light");
+            containerImagesUpload.classList.add("pb-3");
+            containerImagesUpload.classList.add("mb-3");
+            // previewContainer.appendChild(containerImagesUpload);
+            previewContainer.insertBefore(containerImagesUpload, previewContainer.firstChild);
+        }
+       /*  previewContainer.innerHTML = ''; */ // Очищаем контейнер при каждом новом выборе файлов
+
+        if (input.files && input.files.length > 0) {
+            var clearButton = document.createElement("button");
+            clearButton.classList.add("clear-button");
+            clearButton.classList.add("col-12");
+            clearButton.innerHTML = "Удалить добавленные изображения";
+            clearButton.onclick = function () {
+                containerImagesUpload.remove();
+                updateInputFiles();
+            }
+            containerImagesUpload.appendChild(clearButton);
+
+            var containerImages = document.createElement('div');
+            containerImages.classList.add("row");
+            containerImages.classList.add("gy-2");
+            containerImages.classList.add("container-images")
+            containerImagesUpload.appendChild(containerImages)
+            for (var i = 0; i < input.files.length; i++) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.cssText = "width: 100%; height: 100%; object-fit: cover;"
+                    var container = document.createElement('div');
+                    container.classList.add("col-12");
+                    container.classList.add("col-sm-6");
+                    container.classList.add("col-md-4");
+                    container.appendChild(img);
+
+                    containerImages.appendChild(container);
+                };
+                reader.readAsDataURL(input.files[i]);
+            }
+        }
+    }
+
+    function updateInputFiles() {
+        var input = document.getElementById('ImageFile');
+        input.value = ''; // Сбрасываем значение input
+    }
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -22,14 +22,13 @@ namespace StuffApp.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
+            ViewData["CurrentFilter"] = searchString;
             /*IdentityUser user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);*/
             if (_context.Categories != null)
             {
                 var appCtx = _context.Categories
-                    /*.Include(s => s.Posts)*/
-                    /*.Where(w => w.Posts.IdUser == user.Id)*/
                     .OrderBy(f => f.CategoryName)
                 .Select(c => new CategoryWithParent
                 {
@@ -39,8 +38,11 @@ namespace StuffApp.Controllers
                         .Select(pc => pc.CategoryName)
                         .FirstOrDefault()
                 }
-
                 );
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    appCtx = appCtx.Where(s => s.Category.CategoryName.Contains(searchString));
+                }
                 return View(await appCtx.ToListAsync());
                 return View(await _context.Categories.OrderBy(f => f.CategoryName).ToListAsync());
             }

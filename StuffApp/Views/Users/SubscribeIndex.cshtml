@@ -1,0 +1,44 @@
+﻿@model List<StuffApp.ViewModels.Users.IndexSubscribeViewModel>
+
+@{
+    ViewData["Title"] = "Подписки";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Главная</a></li>
+        <li class="breadcrumb-item active">Подписки</li>
+    </ol>
+</nav>
+
+<h1>Подписки</h1>
+
+<form asp-action="SubscribeIndex" method="get" class="mb-2">
+    <div class="d-flex gap-3 align-items-center form-actions no-color mb-3">
+        <label for="SearchString">Поиск:</label>
+        <input type="text" id="SearchString" name="SearchString" value="@ViewData["CurrentFilter"]" placeholder="Название продавца" class="form-control mw-300" />
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-primary" type="submit">Поиск</button>
+        <a title="Очистить поиск" asp-action="SubscribeIndex"><i class="text-dark icon-search-posts fa-solid fa-xmark"></i></a>
+    </div>
+</form>
+@if (Model.Any())
+{
+    <div>
+        @foreach (var subscription in Model)
+        {
+            <div class="border-bottom border-secondary">
+                <strong>Продавец:</strong> <a asp-action="Details" asp-route-id="@subscription.Seller.Id">@subscription.Seller.Fullname</a>
+                <br />
+                <strong>Дата подписки:</strong> @subscription.SubscribeDate
+            </div>
+        }
+    </div>
+
+}
+else
+{
+    <div class="text-center fz-22 mt-5">Нет подписок</div>
+}
+@* у пользователя может не быть подписок, и он может написать в поиск так что нет таких продавцов *@

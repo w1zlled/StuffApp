@@ -26,22 +26,7 @@ namespace StuffApp.Controllers
         [Authorize(Roles = "admin")]
         public IActionResult Index() => View(_userManager.Users.ToList());
 
-        /*public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.PostStatusLog == null)
-            {
-                return NotFound();
-            }
-
-            var postStatusLog = await _context.PostStatusLog
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (postStatusLog == null)
-            {
-                return NotFound();
-            }
-
-            return View(postStatusLog);
-        }*/
+       
         [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -137,11 +122,11 @@ namespace StuffApp.Controllers
             // получаем пользователя
             /*User user = await _userManager.FindByIdAsync(id);*/
 
-            /*var userWithPosts = await _context.Users
-            .Where(user => user.Id == id)
-            .Include(user => user.Posts)
-            .ThenInclude(post => post.Category)
-            .FirstOrDefaultAsync();*/
+   
+
+            var currentUserId = _userManager.GetUserId(User);
+            bool isSubscribed = await _context.Subscribe
+                .AnyAsync(s => s.IdSubscriber == currentUserId && s.IdSeller == id);
 
             var userWithPosts = await _context.Users
                 .Where(user => user.Id == id)
@@ -164,38 +149,101 @@ namespace StuffApp.Controllers
                 var viewModel = new DetailsUserViewModel
                 {
                     User = userWithPosts,
-                    Posts = postsWithImages.ToList()
+                    Posts = postsWithImages.ToList(),
+                    IsCurrentUserSubscribed = isSubscribed
                 };
 
                 return View(viewModel);
             }
 
-            /*if (userWithPosts != null)
-            {
-                // Создание объекта DetailsUserViewModel с данными пользователя и постов
-                var viewModel = new DetailsUserViewModel
-                {
-                    User = userWithPosts,
-                    Posts = userWithPosts.Posts
-                };
 
-                return View(viewModel);
-            }*/
+            return NotFound();
+        }
 
-            /*if (user != null)
+        public async Task<IActionResult> Subscribe(string? id)
+        {
+            var currentUserId = _userManager.GetUserId(User);
+            // получаем пользователя
+            if (id != null && currentUserId != null)
             {
-                *//*User model = new User
+                Subscribe subscribe = new Subscribe { IdSubscriber = currentUserId, IdSeller = id };
+                _context.Add(subscribe);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Details), new { id = id });
+            }
+
+            return NotFound();
+        }
+
+        public async Task<IActionResult> Unsubscribe(string? id)
+        {
+            var currentUserId = _userManager.GetUserId(User);
+            // получаем пользователя
+            if (id != null && currentUserId != null)
+            {
+                // Ищем подписку пользователя на продавца
+                var subscription = await _context.Subscribe
+                    .Where(s => s.IdSubscriber == currentUserId && s.IdSeller == id)
+                    .FirstOrDefaultAsync();
+
+                // Если подписка найдена, удаляем ее и сохраняем изменения
+                if (subscription != null)
                 {
-                    UserId = user.Id,
-                    UserEmail = user.Email,
-                    UserRoles = userRoles,
-                    AllRoles = allRoles
-                };*/
-            /*return RedirectToAction("Index");*/
-            /*return View(appCtx);*//*
-        }*/
-            /*return RedirectToAction("Index");*/
-            /*return View(model);*/
+                    _context.Subscribe.Remove(subscription);
+                    await _context.SaveChangesAsync();
+                }
+                return RedirectToAction(nameof(Details), new { id = id });
+            }
+
+            return NotFound();
+        }
+
+        public async Task<IActionResult> SubscribeIndex(string? searchString)
+        {
+            ViewData["CurrentFilter"] = searchString;
+            var currentUserId = _userManager.GetUserId(User);
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                /*appCtx = appCtx.Where(s => s.Post.Title.Contains(searchString));*/
+                var subscribes = _context.Subscribe
+                .Join(
+                    _context.Users,
+                    subscribe => subscribe.IdSeller,
+                    user => user.Id,
+                    (subscribe, user) => new { Subscribe = subscribe, User = user }
+                )
+                .Where(s => s.Subscribe.IdSubscriber == currentUserId)
+                .AsEnumerable() // Переход к выполнению запроса на стороне клиента
+                .Where(s => s.User.Fullname.Contains(searchString))
+                .Select(s => new IndexSubscribeViewModel
+                {
+                    Seller = s.User,
+                    SubscribeDate = s.Subscribe.SubscribeDate
+                })
+                .ToList();
+
+                return View(subscribes);
+            } else
+            {
+                var subscribes = _context.Subscribe
+                .Join(
+                    _context.Users,
+                    subscribe => subscribe.IdSeller,
+                    user => user.Id,
+                    (subscribe, user) => new { Subscribe = subscribe, User = user }
+                )
+                .Where(s => s.Subscribe.IdSubscriber == currentUserId)
+                .Select(s => new IndexSubscribeViewModel
+                {
+                    Seller = s.User,
+                    SubscribeDate = s.Subscribe.SubscribeDate
+                })
+                .ToList();
+
+                return View(subscribes);
+            }
+
+
             return NotFound();
         }
     }
