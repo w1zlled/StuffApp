@@ -101,10 +101,10 @@ namespace StuffApp.Controllers
                     break;
             }
 
-            int pageSize = 8;
+            int pageSize = 4;
             return View(await PaginatedList<PostWithStatus>.CreateAsync(appCtx.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
-
+        [Authorize(Roles = "registeredUser, admin")]
         public async Task<IActionResult> IndexMy(string sortOrder, string searchString, string currentFilter, int? pageNumber, int? categoryId, short? statusId)
         {
             ViewData["CurrentSort"] = sortOrder;
@@ -235,7 +235,7 @@ namespace StuffApp.Controllers
 
             return View(post);
         }
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "registeredUser, admin")]
         public async Task<IActionResult> DetailsModerate(int? id)
         {
             if (id == null || _context.Posts == null)
@@ -269,6 +269,7 @@ namespace StuffApp.Controllers
             return View(post);
         }
 
+        [Authorize(Roles = "registeredUser, admin")]
         // GET: Posts/Create
         public async Task<IActionResult> CreateAsync()
         {
@@ -281,6 +282,7 @@ namespace StuffApp.Controllers
             return View();
         }
 
+        [Authorize(Roles = "registeredUser, admin")]
         // POST: Posts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -340,6 +342,7 @@ namespace StuffApp.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "registeredUser, admin")]
         // GET: Posts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -383,6 +386,7 @@ namespace StuffApp.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "registeredUser, admin")]
         // POST: Posts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -468,6 +472,7 @@ namespace StuffApp.Controllers
             
         }
 
+        [Authorize(Roles = "registeredUser, admin")]
         // GET: Posts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -488,6 +493,7 @@ namespace StuffApp.Controllers
             return View(post);
         }
 
+        [Authorize(Roles = "registeredUser, admin")]
         // POST: Posts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -512,6 +518,7 @@ namespace StuffApp.Controllers
             return (_context.Posts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
+        [Authorize(Roles = "admin")]
         // GET: Posts
         public async Task<IActionResult> IndexModerate(string sortOrder, string searchString, string currentFilter, int? pageNumber, int? categoryId, short? statusId)
         {

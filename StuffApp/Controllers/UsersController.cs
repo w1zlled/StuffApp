@@ -160,6 +160,7 @@ namespace StuffApp.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "registeredUser, admin")]
         public async Task<IActionResult> Subscribe(string? id)
         {
             var currentUserId = _userManager.GetUserId(User);
@@ -175,6 +176,7 @@ namespace StuffApp.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "registeredUser, admin")]
         public async Task<IActionResult> Unsubscribe(string? id)
         {
             var currentUserId = _userManager.GetUserId(User);
@@ -198,6 +200,7 @@ namespace StuffApp.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "registeredUser, admin")]
         public async Task<IActionResult> SubscribeIndex(string? searchString)
         {
             ViewData["CurrentFilter"] = searchString;
