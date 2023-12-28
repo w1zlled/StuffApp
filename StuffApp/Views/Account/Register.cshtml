@@ -34,9 +34,8 @@
                         <input type="submit" value="Зарегистрироваться" class="btn btn-primary btn-block mt-3" />
                     </div>
                     <div class="mb-3">
-                        <input asp-for="Privacy" name="privacy" type="checkbox" value="true" class="form-check-input" />
-                        <label for="privacy" class="form-check-label" for="flexCheckDefault">Я согласен с политикой конфиденциальности</label>
-                        
+                        <input asp-for="Privacy" id="privacy" type="checkbox" value="true" class="form-check-input" />
+                        <label for="privacy" class="form-check-label" for="flexCheckDefault">Я согласен с <a target="_blank" asp-controller="Home" asp-action="Privacy">политикой конфиденциальности</a></label>
                         <span asp-validation-for="Privacy" class="text-danger"></span>
                     </div>
                 </form>
