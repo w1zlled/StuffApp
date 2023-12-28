@@ -27,5 +27,10 @@ namespace StuffApp.ViewModels.Account
         [DataType(DataType.Password)]   // тип элемента управления на странице
         [Display(Name = "Подтвердить пароль")]
         public string PasswordConfirm { get; set; }
+
+        [Required(ErrorMessage = "Необходимо согласие с политикой конфиденциальности")]
+        [Display(Name = "Согласие с политикой конфиденциальности")]
+        [Range(typeof(bool), "true", "true", ErrorMessage = "Необходимо согласие с политикой конфиденциальности")]
+        public bool Privacy { get; set; }
     }
 }
